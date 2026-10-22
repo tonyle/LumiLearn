@@ -3,11 +3,11 @@ import {createElement} from 'react';
 import {cleanup,fireEvent,render,screen} from '@testing-library/react';
 import {afterEach,beforeEach,describe,it,expect,vi} from 'vitest';
 import {PaperInk} from '@/components/paper-ink';
-import {pageLayout,paperHeight,type PaperQuestion,type PaperDraft,type InkStroke} from '@/lib/paper';
+import {pageLayout,type PaperQuestion,type PaperDraft,type InkStroke} from '@/lib/paper';
 vi.mock('next/image',()=>({default:()=>null}));
 class TestPointerEvent extends MouseEvent{
- readonly pointerId:number;readonly pressure:number;private batch:PointerEvent[];
- constructor(type:string,init:MouseEventInit&{pointerId?:number;pressure?:number;coalesced?:PointerEvent[]}={}){super(type,init);this.pointerId=init.pointerId??1;this.pressure=init.pressure??.5;this.batch=init.coalesced??[];}
+ readonly pointerId:number;readonly pointerType:string;readonly isPrimary:boolean;readonly width:number;readonly height:number;readonly pressure:number;private batch:PointerEvent[];
+ constructor(type:string,init:MouseEventInit&{pointerId?:number;pointerType?:string;isPrimary?:boolean;width?:number;height?:number;pressure?:number;coalesced?:PointerEvent[]}={}){super(type,init);this.pointerId=init.pointerId??1;this.pointerType=init.pointerType??'pen';this.isPrimary=init.isPrimary??true;this.width=init.width??1;this.height=init.height??1;this.pressure=init.pressure??.5;this.batch=init.coalesced??[];}
  getCoalescedEvents(){return this.batch;}
 }
 const questions:PaperQuestion[]=Array.from({length:10},(_,i)=>({id:`q${i}`,type:'handwriting',prompt:{text:'Write your answer.'},options:[]}));
@@ -15,11 +15,11 @@ const cells=pageLayout(questions,1),cell=cells[0],x=cell.x+40,y=cell.y+80;
 const context={clearRect:vi.fn(),save:vi.fn(),restore:vi.fn(),beginPath:vi.fn(),rect:vi.fn(),clip:vi.fn(),moveTo:vi.fn(),lineTo:vi.fn(),stroke:vi.fn()};
 function setup(draft:PaperDraft={}){
  const onChange=vi.fn(),onWritingChange=vi.fn();const props={questions,title:'Paper',pageIndex:0,draft,results:[],tool:'pen' as const,editable:()=>true,onSelect:vi.fn(),onChange,onWritingChange};
- const view=render(createElement(PaperInk,props));const canvas=screen.getByLabelText('Worksheet writing surface. Use Pen to write, or Move page to scroll.') as HTMLCanvasElement;
- canvas.setPointerCapture=vi.fn();const bounds=vi.spyOn(canvas,'getBoundingClientRect').mockReturnValue({left:0,top:0,width:1000,height:paperHeight(questions,1)} as DOMRect);
+ const view=render(createElement(PaperInk,props));const canvas=screen.getByLabelText('Question 1 writing surface') as HTMLCanvasElement;
+ canvas.setPointerCapture=vi.fn();const bounds=vi.spyOn(canvas,'getBoundingClientRect').mockReturnValue({left:cell.x,top:cell.y,width:cell.width,height:cell.height} as DOMRect);
  return {...view,canvas,bounds,props,onChange,onWritingChange};
 }
-beforeEach(()=>{vi.stubGlobal('PointerEvent',TestPointerEvent);for(const f of Object.values(context))if(vi.isMockFunction(f))f.mockClear();vi.spyOn(HTMLCanvasElement.prototype,'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D);});
+beforeEach(()=>{vi.stubGlobal('PointerEvent',TestPointerEvent);vi.stubGlobal('requestAnimationFrame',vi.fn(()=>1));vi.stubGlobal('cancelAnimationFrame',vi.fn());for(const f of Object.values(context))if(vi.isMockFunction(f))f.mockClear();vi.spyOn(HTMLCanvasElement.prototype,'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D);});
 afterEach(()=>{cleanup();vi.restoreAllMocks();vi.unstubAllGlobals();});
 describe('low-latency worksheet ink',()=>{
  it('keeps completed ink on the canvas without replaying it after each pen lift',()=>{
@@ -45,7 +45,7 @@ describe('low-latency worksheet ink',()=>{
  });
  it('retains coalesced samples and the last point on pen-up while ignoring other pointers',()=>{
   const {canvas,onChange,onWritingChange}=setup();fireEvent.pointerDown(canvas,{clientX:x,clientY:y,pointerId:7});
-  fireEvent.pointerDown(canvas,{clientX:x+200,clientY:y+50,pointerId:8});fireEvent.pointerMove(canvas,{clientX:x+200,clientY:y+100,pointerId:8});fireEvent.pointerUp(canvas,{pointerId:8});
+  fireEvent.pointerDown(canvas,{clientX:x+200,clientY:y+50,pointerId:8,pointerType:'touch',isPrimary:false});fireEvent.pointerMove(canvas,{clientX:x+200,clientY:y+100,pointerId:8,pointerType:'touch',isPrimary:false});fireEvent.pointerUp(canvas,{pointerId:8,pointerType:'touch',isPrimary:false});
   fireEvent.pointerMove(canvas,{clientX:x+30,clientY:y+30,pointerId:7,coalesced:[new TestPointerEvent('pointermove',{clientX:x+10,clientY:y+10,pointerId:7}),new TestPointerEvent('pointermove',{clientX:x+20,clientY:y+20,pointerId:7})]});
   fireEvent.pointerUp(canvas,{clientX:x+40,clientY:y+40,pointerId:7});fireEvent.lostPointerCapture(canvas,{pointerId:7});
   expect(onChange).toHaveBeenCalledTimes(1);expect(onChange.mock.calls[0][1].points).toHaveLength(5);expect(onChange.mock.calls[0][1].points.at(-1).x).toBeCloseTo(80/cell.width);expect(onWritingChange.mock.calls).toEqual([[true],[false]]);
@@ -55,13 +55,52 @@ describe('low-latency worksheet ink',()=>{
   const draft={q0:{text:'',strokes:[pen,eraser]},q1:{text:'',strokes:[pen]}};
   const {rerender,props}=setup(draft);context.clearRect.mockClear();context.stroke.mockClear();
   rerender(createElement(PaperInk,{...props,draft:{...draft,q0:{text:'',strokes:[pen]}}}));
-  expect(context.clearRect.mock.calls).toEqual([[cell.x,cell.y,cell.width,cell.height]]);expect(context.stroke).toHaveBeenCalledTimes(1);
+  expect(context.clearRect.mock.calls).toEqual([[0,0,cell.width,cell.height]]);expect(context.stroke).toHaveBeenCalledTimes(1);
   context.stroke.mockClear();rerender(createElement(PaperInk,props));expect(context.clearRect).toHaveBeenCalledTimes(1);expect(context.stroke).toHaveBeenCalledTimes(1);expect((context as unknown as CanvasRenderingContext2D).globalCompositeOperation).toBe('destination-out');
  });
  it('falls back to normal pointer events when coalesced samples are unavailable on HTTP',()=>{
   vi.stubGlobal('PointerEvent',MouseEvent);
   const {canvas,onChange}=setup();fireEvent.pointerDown(canvas,{clientX:x,clientY:y});fireEvent.pointerMove(canvas,{clientX:x+10,clientY:y+10});fireEvent.pointerUp(canvas,{clientX:x+20,clientY:y+20});
   expect(onChange).toHaveBeenCalledTimes(1);expect(onChange.mock.calls[0][1].points).toHaveLength(3);
+ });
+ it('accepts 100 consecutive short strokes without waiting for React or an animation frame',()=>{
+  const {canvas,onChange,bounds}=setup();context.clearRect.mockClear();
+  for(let i=0;i<100;i++){
+   fireEvent.pointerDown(canvas,{clientX:x,clientY:y,pointerId:7});fireEvent.pointerMove(canvas,{clientX:x+4,clientY:y+5,pointerId:7});fireEvent.pointerUp(canvas,{clientX:x+8,clientY:y+10,pointerId:7});
+  }
+  expect(onChange).toHaveBeenCalledTimes(100);expect(bounds).toHaveBeenCalledTimes(100);expect(context.clearRect).not.toHaveBeenCalled();
+  for(const call of onChange.mock.calls)expect(call[1].points).toHaveLength(3);
+ });
+ it('recovers the next letter if the previous pen-up was lost',()=>{
+  const {canvas,onChange}=setup();fireEvent.pointerDown(canvas,{clientX:x,clientY:y,pointerId:7});fireEvent.pointerMove(canvas,{clientX:x+10,clientY:y+10,pointerId:7});
+  fireEvent.pointerDown(canvas,{clientX:x+40,clientY:y,pointerId:7});fireEvent.pointerUp(canvas,{clientX:x+50,clientY:y+10,pointerId:7});
+  expect(onChange).toHaveBeenCalledTimes(2);expect(onChange.mock.calls[0][1].points).toHaveLength(2);expect(onChange.mock.calls[1][1].points).toHaveLength(2);
+ });
+ it('gives a real pen priority over an existing palm contact',()=>{
+  const {canvas,onChange}=setup();fireEvent.pointerDown(canvas,{clientX:x,clientY:y,pointerId:2,pointerType:'touch'});
+  fireEvent.pointerDown(canvas,{clientX:x+20,clientY:y,pointerId:7,pointerType:'pen'});fireEvent.pointerUp(canvas,{clientX:x+30,clientY:y+10,pointerId:7});
+  fireEvent.pointerUp(canvas,{clientX:x,clientY:y,pointerId:2,pointerType:'touch'});expect(onChange).toHaveBeenCalledTimes(1);expect(onChange.mock.calls[0][1].points[0].x).toBeCloseTo(60/cell.width);
+ });
+ it('accepts 100 touch-stylus letters with changing pointer IDs and no pause',()=>{
+  const {canvas,onChange}=setup();
+  for(let i=0;i<100;i++){const pointerId=i+10;fireEvent.pointerDown(canvas,{clientX:x,clientY:y,pointerId,pointerType:'touch'});fireEvent.pointerUp(canvas,{clientX:x+8,clientY:y+10,pointerId,pointerType:'touch'});}
+  expect(onChange).toHaveBeenCalledTimes(100);for(const call of onChange.mock.calls)expect(call[1].points).toHaveLength(2);
+ });
+ it('accepts a new touch-stylus letter even when the previous touch-up was missed',()=>{
+  const {canvas,onChange}=setup();fireEvent.pointerDown(canvas,{clientX:x,clientY:y,pointerId:10,pointerType:'touch'});fireEvent.pointerMove(canvas,{clientX:x+10,clientY:y+10,pointerId:10,pointerType:'touch'});
+  fireEvent.pointerDown(canvas,{clientX:x+30,clientY:y,pointerId:11,pointerType:'touch',isPrimary:false});fireEvent.pointerUp(canvas,{clientX:x+40,clientY:y+10,pointerId:11,pointerType:'touch',isPrimary:false});
+  fireEvent.pointerUp(canvas,{pointerId:10,pointerType:'touch'});expect(onChange).toHaveBeenCalledTimes(2);
+ });
+ it('cancels touch gestures while writing but permits native scrolling in Move mode',()=>{
+  const {canvas,rerender,props}=setup();expect(fireEvent.touchStart(canvas,{cancelable:true})).toBe(false);expect(fireEvent.touchMove(canvas,{cancelable:true})).toBe(false);
+  rerender(createElement(PaperInk,{...props,tool:'move'}));expect(fireEvent.touchStart(canvas,{cancelable:true})).toBe(true);
+  fireEvent.pointerDown(canvas,{clientX:x,clientY:y});expect(props.onChange).not.toHaveBeenCalled();
+ });
+ it('uses a question-sized backing canvas and batches movement drawing once per frame',()=>{
+  const {canvas,onChange}=setup();expect(canvas.width).toBe(450);expect(canvas.height).toBe(cell.height);context.stroke.mockClear();
+  fireEvent.pointerDown(canvas,{clientX:x,clientY:y});for(let i=1;i<=20;i++)fireEvent.pointerMove(canvas,{clientX:x+i,clientY:y+i});
+  expect(context.stroke).toHaveBeenCalledTimes(1);expect(requestAnimationFrame).toHaveBeenCalledTimes(1);
+  fireEvent.pointerUp(canvas,{clientX:x+20,clientY:y+20});expect(context.stroke).toHaveBeenCalledTimes(2);expect(onChange.mock.calls[0][1].points).toHaveLength(21);
  });
  it('stays within the server point cap and commits once on pointer cancellation',()=>{
   const {canvas,onChange}=setup();fireEvent.pointerDown(canvas,{clientX:x,clientY:y});for(let i=0;i<1600;i++)fireEvent.pointerMove(canvas,{clientX:x+(i%200),clientY:y+(i%30)});

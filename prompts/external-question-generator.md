@@ -1,16 +1,5 @@
 # Generate a LumiLearn worksheet
 
-## Cách sử dụng
-
-1. Điền lớp, môn và chủ đề trong phần **Worksheet request** bên dưới.
-2. Gửi prompt này kèm `schemas/question-set.schema.json` cho AI. Nếu dùng Codex trong project EasyLearn, yêu cầu đọc trực tiếp schema và `lib/question-schema.ts`.
-3. Mỗi lần tạo **một worksheet đúng 10 câu**, lưu thành một file `.json`, rồi đưa vào **Parent → Import questions** để kiểm tra và import.
-4. Nếu cần nhiều bài, tạo từng file riêng với `setId` khác nhau. Sau khi import, chọn **Create worksheet & assign** hoặc **Question library → Choose questions**: chọn đúng 10 câu, xem Preview rồi chọn học sinh và Assign. Prompt này không tự giao bài cho học sinh.
-
-Ví dụ yêu cầu cho Codex:
-
-> Read prompts/external-question-generator.md and the current schemas. Generate one Grade 3 math worksheet about multiplication and division, with exactly 10 questions at grade_level difficulty. Use practice mode, English questions and no Vietnamese translations. Save the validated JSON to examples/generated/grade3-math-multiplication-division-lesson-01-v1.json. Do not import, assign or change existing student work.
-
 ## Worksheet request
 
 - Grade: [GRADE — for example "1", "3", or "5"]

@@ -4,9 +4,10 @@ import {act,cleanup,fireEvent,render,screen,waitFor} from "@testing-library/reac
 import {afterEach,describe,expect,it,vi} from "vitest";
 import {PaperPlayer} from "@/components/paper-player";
 import type {PaperQuestion} from "@/lib/paper";
+const inkRenderCount=vi.hoisted(()=>({value:0}));
 vi.mock("@/hooks/use-study-timer",()=>({useStudyTimer:()=>({clock:{state:"running",elapsedMs:0,started:true,serverNow:Date.now(),leaseUntil:Date.now()+45000},loading:false,error:"",pause:vi.fn(),resume:vi.fn().mockResolvedValue(undefined),apply:vi.fn()})}));
 vi.mock("next/link",()=>({default:"a"}));
-vi.mock("@/components/paper-ink",()=>({PaperInk:({questions,onChange,onWritingChange}:{questions:PaperQuestion[];onChange:(id:string,stroke:unknown)=>void;onWritingChange?:(active:boolean)=>void})=>createElement("button",{onPointerDown:()=>onWritingChange?.(true),onPointerUp:()=>onWritingChange?.(false),onClick:()=>onChange(questions[0].id,{tool:"pen",points:[{x:.2,y:.3,p:.5}]})},`Draw on ${questions.length}-question paper`)}));
+vi.mock("@/components/paper-ink",()=>({PaperInk:({questions,onChange,onWritingChange}:{questions:PaperQuestion[];onChange:(id:string,stroke:unknown)=>void;onWritingChange?:(active:boolean)=>void})=>{inkRenderCount.value++;return createElement("button",{onPointerDown:()=>onWritingChange?.(true),onPointerUp:()=>onWritingChange?.(false),onClick:()=>onChange(questions[0].id,{tool:"pen",points:[{x:.2,y:.3,p:.5}]})},`Draw on ${questions.length}-question paper`);}}));
 afterEach(()=>{cleanup();vi.useRealTimers();vi.unstubAllGlobals();});
 const questions=Array.from({length:12},(_,index)=>({id:`00000000-0000-4000-8000-${String(index+1).padStart(12,"0")}`,type:"number",prompt:{text:`Question ${index+1}`},options:[]}));
 describe("paper player",()=>{
@@ -20,13 +21,13 @@ describe("paper player",()=>{
   });
   vi.stubGlobal("fetch",fetcher);render(createElement(PaperPlayer,{assignmentId:"assignment",studentId:"learner",title:"Math paper",questions,aiReady:false}));
   const pen=await screen.findByText("Draw on 10-question paper");vi.useFakeTimers();
-  fireEvent.click(pen);await act(async()=>{await vi.advanceTimersByTimeAsync(1199);});expect(writes).toBe(0);
+  fireEvent.click(pen);await act(async()=>{await vi.advanceTimersByTimeAsync(250);});await act(async()=>{await vi.advanceTimersByTimeAsync(1799);});expect(writes).toBe(0);
   await act(async()=>{await vi.advanceTimersByTimeAsync(1);});expect(writes).toBe(1);expect(screen.getByText("Saving in background…")).toBeTruthy();
   fireEvent.click(pen);expect((screen.getByRole("button",{name:"Pen"}) as HTMLButtonElement).disabled).toBe(false);
   expect((screen.getByRole("button",{name:"Submit whole page"}) as HTMLButtonElement).disabled).toBe(false);
   await act(async()=>{finishFirst({ok:true,json:async()=>({data:{revision:1}})});});
   expect(screen.getByText("Waiting to save…")).toBeTruthy();
-  await act(async()=>{await vi.advanceTimersByTimeAsync(1200);});
+  await act(async()=>{await vi.advanceTimersByTimeAsync(250);});await act(async()=>{await vi.advanceTimersByTimeAsync(1800);});
   const requests=fetcher.mock.calls.filter(call=>call[1]?.method==="PUT");expect(requests).toHaveLength(2);
   const second=JSON.parse(requests[1][1].body);expect(second.baseRevision).toBe(1);expect(second.draft[questions[0].id].strokes).toHaveLength(2);expect(screen.getByText("Saved")).toBeTruthy();
  });
@@ -34,7 +35,15 @@ describe("paper player",()=>{
   const fetcher=vi.fn().mockImplementation(async(_url,options)=>({ok:true,json:async()=>options?.method==="PUT"?{data:{revision:1}}:{data:{revision:0,draft:{},feedback:null}}}));vi.stubGlobal("fetch",fetcher);
   render(createElement(PaperPlayer,{assignmentId:"assignment",studentId:"learner",title:"Math paper",questions,aiReady:false}));const pen=await screen.findByText("Draw on 10-question paper");vi.useFakeTimers();
   fireEvent.click(pen);fireEvent.pointerDown(pen);await act(async()=>{await vi.advanceTimersByTimeAsync(1500);});expect(fetcher.mock.calls.filter(c=>c[1]?.method==="PUT")).toHaveLength(0);
-  fireEvent.pointerUp(pen);fireEvent.click(pen);await act(async()=>{await vi.advanceTimersByTimeAsync(1200);});const writes=fetcher.mock.calls.filter(c=>c[1]?.method==="PUT");expect(writes).toHaveLength(1);expect(JSON.parse(writes[0][1].body).draft[questions[0].id].strokes).toHaveLength(2);
+  fireEvent.pointerUp(pen);fireEvent.click(pen);await act(async()=>{await vi.advanceTimersByTimeAsync(250);});await act(async()=>{await vi.advanceTimersByTimeAsync(1800);});const writes=fetcher.mock.calls.filter(c=>c[1]?.method==="PUT");expect(writes).toHaveLength(1);expect(JSON.parse(writes[0][1].body).draft[questions[0].id].strokes).toHaveLength(2);
+ });
+ it("does not render the worksheet again between rapid letters and submits the latest ink before UI catches up",async()=>{
+  const fetcher=vi.fn().mockResolvedValue({ok:true,json:async()=>({data:{revision:0,draft:{},feedback:null}})});vi.stubGlobal("fetch",fetcher);
+  render(createElement(PaperPlayer,{assignmentId:"assignment",studentId:"learner",title:"Math paper",questions,aiReady:false}));const pen=await screen.findByText("Draw on 10-question paper");vi.useFakeTimers();const renders=inkRenderCount.value;
+  for(let i=0;i<60;i++){fireEvent.pointerDown(pen);fireEvent.pointerUp(pen);fireEvent.click(pen);await act(async()=>{await vi.advanceTimersByTimeAsync(30);});}
+  expect(inkRenderCount.value).toBe(renders);expect(fetcher.mock.calls.some(c=>c[1]?.method==="PUT")).toBe(false);
+  fireEvent.click(screen.getByText("Next page →"));await act(async()=>{});
+  const write=fetcher.mock.calls.find(c=>c[1]?.method==="PUT");expect(JSON.parse(write![1].body).draft[questions[0].id].strokes).toHaveLength(60);
  });
  it("blocks a blank second page and lists global question numbers in a dismissible popup",async()=>{
   const fetcher=vi.fn().mockResolvedValue({ok:true,json:async()=>({data:{revision:0,draft:{},feedback:null}})});vi.stubGlobal("fetch",fetcher);

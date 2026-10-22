@@ -7,6 +7,7 @@ import { useStudyTimer } from "@/hooks/use-study-timer";
 import { StudyTimer } from "./study-timer";
 import { Play,Pause, Eraser, Hand, PenLine, RotateCcw, RotateCw, Send, Printer } from "lucide-react";
 import { PaperInk } from "./paper-ink";
+import {createPaperSaver} from "@/lib/paper-save-client";
 import { QUESTIONS_PER_PAGE, type InkStroke, type PaperDraft, type PaperFeedback, type PaperQuestion, type PaperResult, type PaperState } from "@/lib/paper";
 const EMPTY_RESULTS:PaperResult[]=[];
 const EMPTY_DRAFT:PaperDraft={};
@@ -32,9 +33,25 @@ function PaperPage({assignmentId,studentId,title,questions,pageIndex,pages,navig
   const grading=submitting||feedback?.status==="processing";
   const editing=!readOnly&&timer.clock?.state==="running"&&(!feedback||retrying||feedback.status==="failed"||feedback.status==="draft");
   const editable=useCallback((id:string)=>!busy&&editing&&feedback?.results.find(r=>r.questionId===id)?.status!=="correct"&&feedback?.results.find(r=>r.questionId===id)?.status!=="needs_review",[busy,editing,feedback?.results]);
-  const update=useCallback((next:PaperDraft)=>{latest.current=next;setDraft(next);setDirty(true);setError("");},[]);
-  const appendStroke=useCallback((id:string,stroke:InkStroke)=>{const answer=latest.current[id]??{strokes:[],text:""};update({...latest.current,[id]:{...answer,strokes:[...answer.strokes,stroke]}});setRedo([]);},[update]);
-  const writingChanged=useCallback((active:boolean)=>{writing.current=active;},[]);
+  const inkUiTimer=useRef<ReturnType<typeof setTimeout>|null>(null),selectedRef=useRef(questions[0]?.id??""),redoRef=useRef<{id:string;stroke:InkStroke}[]>([]),saver=useRef<ReturnType<typeof createPaperSaver>|null>(null);
+  const cancelInkUi=useCallback(()=>{if(inkUiTimer.current!==null){clearTimeout(inkUiTimer.current);inkUiTimer.current=null;}},[]);
+  const refreshAfterWriting=useCallback(()=>{
+    cancelInkUi();inkUiTimer.current=setTimeout(()=>{
+      inkUiTimer.current=null;if(writing.current)return;
+      setDraft(latest.current);setDirty(latest.current!==saved.current);setSelected(selectedRef.current);setRedo(redoRef.current);setError("");
+    },250);
+  },[cancelInkUi]);
+  // Completed strokes enter the authoritative draft immediately. React catches up
+  // after a short writing pause, rather than interrupting every letter/pen lift.
+  const update=useCallback((next:PaperDraft)=>{cancelInkUi();latest.current=next;setDraft(next);setDirty(true);setError("");},[cancelInkUi]);
+  const appendStroke=useCallback((id:string,stroke:InkStroke)=>{
+    const answer=latest.current[id]??{strokes:[],text:""};latest.current={...latest.current,[id]:{...answer,strokes:[...answer.strokes,stroke]}};
+    redoRef.current=[];refreshAfterWriting();
+  },[refreshAfterWriting]);
+  const selectAnswer=useCallback((id:string)=>{selectedRef.current=id;},[]);
+  const readDraft=useCallback(()=>latest.current,[]);
+  const writingChanged=useCallback((active:boolean)=>{writing.current=active;if(active)cancelInkUi();else refreshAfterWriting();},[cancelInkUi,refreshAfterWriting]);
+  useEffect(()=>()=>{cancelInkUi();saver.current?.destroy();},[cancelInkUi]);
   useEffect(()=>{
     let cancelled=false;
     fetch(endpoint).then(async response=>{const json=await response.json();if(!response.ok)throw Error(json.error?.message||"Could not load this page.");if(cancelled)return;const state=json.data as PaperState;revision.current=state.revision;latest.current=state.draft;saved.current=state.draft;setDraft(state.draft);setFeedback(state.feedback);setLoaded(true);}).catch(error=>{if(!cancelled)setError(error.message);});
@@ -44,12 +61,12 @@ function PaperPage({assignmentId,studentId,title,questions,pageIndex,pages,navig
     const task=queue.current.catch(()=>{}).then(async()=>{
       const payload=latest.current;if(payload===saved.current)return;
       setSaving(true);
-      try{const response=await fetch(endpoint,{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({baseRevision:revision.current,draft:payload})});const json=await response.json();if(!response.ok)throw Error(json.error?.message||"Could not save this page.");revision.current=json.data.revision;saved.current=payload;setDirty(latest.current!==payload);setError("");}
+      try{saver.current??=createPaperSaver();const result=await saver.current.save(endpoint,{baseRevision:revision.current,draft:payload});revision.current=result.revision;saved.current=payload;setDirty(latest.current!==payload);setError("");}
       catch(error){setError(error instanceof Error?error.message:"Could not save your work.");throw error;}
       finally{setSaving(false);}
     });queue.current=task;return task;
   },[endpoint]);
-  useEffect(()=>{if(!loaded||busy||!dirty)return;const timer=setTimeout(()=>{if(!writing.current)void save().catch(()=>{});},1200);return()=>clearTimeout(timer);},[draft,loaded,busy,dirty,save]);
+  useEffect(()=>{if(!loaded||busy||!dirty)return;const timer=setTimeout(()=>{if(!writing.current)void save().catch(()=>{});},1800);return()=>clearTimeout(timer);},[draft,loaded,busy,dirty,save]);
   useEffect(()=>{
     if(feedback?.status!=="processing")return;
     const timer=setInterval(()=>{fetch(endpoint).then(r=>r.json()).then(json=>{if(json.data){setFeedback(json.data.feedback);revision.current=json.data.revision;}}).catch(()=>{});},2500);
@@ -69,12 +86,14 @@ function PaperPage({assignmentId,studentId,title,questions,pageIndex,pages,navig
       const state=json.data as PaperState;revision.current=state.revision;latest.current=state.draft;saved.current=state.draft;setDraft(state.draft);setDirty(false);setFeedback(state.feedback);if(state.clock)timer.apply(state.clock);setRetrying(false);submissionKey.current=null;
     }catch(error){setError(error instanceof Error?error.message:"Connection lost. Your saved work is kept; try submitting again.");}finally{setSubmitting(false);}
   }
-  async function retryWrong(){try{await timer.resume();}catch{setError("Could not resume the timer. Please try again.");return;}const next={...latest.current};for(const result of feedback?.results??[])if(result.status==="incorrect")next[result.questionId]={strokes:[],text:""};setRetrying(true);setRedo([]);update(next);}
+  async function retryWrong(){try{await timer.resume();}catch{setError("Could not resume the timer. Please try again.");return;}const next={...latest.current};for(const result of feedback?.results??[])if(result.status==="incorrect")next[result.questionId]={strokes:[],text:""};setRetrying(true);redoRef.current=[];setRedo([]);update(next);}
   async function pauseLesson(){
     setPausing(true);
     try{try{await save();}catch{}await timer.pause();}catch{setError("Could not pause on the server. Please try again.");}finally{setPausing(false);}
   }
   async function resumeLesson(){setResuming(true);try{await timer.resume();}catch{setError("Could not resume. Check your connection and try again.");}finally{setResuming(false);}}
+  function undoStroke(){const id=selectedRef.current,answer=latest.current[id];if(!answer?.strokes.length||!editable(id))return;const nextRedo=[{id,stroke:answer.strokes.at(-1)!},...redoRef.current];redoRef.current=nextRedo;setRedo(nextRedo);setSelected(id);update({...latest.current,[id]:{...answer,strokes:answer.strokes.slice(0,-1)}});}
+  function redoStroke(){const [item,...rest]=redoRef.current;if(!item||!editable(item.id))return;redoRef.current=rest;setRedo(rest);selectedRef.current=item.id;setSelected(item.id);const answer=latest.current[item.id]??{strokes:[],text:""};update({...latest.current,[item.id]:{...answer,strokes:[...answer.strokes,item.stroke]}});}
   const wrong=feedback?.results.filter(r=>r.status==="incorrect").length??0;
   const selectedAnswer=draft[selected]??{strokes:[],text:""};
   if(!loaded)return <main className="student-main"><p role="status">{error||"Loading your paper…"}</p></main>;
@@ -91,13 +110,13 @@ function PaperPage({assignmentId,studentId,title,questions,pageIndex,pages,navig
       <button className={tool==="pen"?"secondary":"ghost"} aria-pressed={tool==="pen"} disabled={busy} onClick={()=>setTool("pen")}><PenLine size={18}/> Pen</button>
       <button className={tool==="eraser"?"secondary":"ghost"} aria-pressed={tool==="eraser"} disabled={busy} onClick={()=>setTool("eraser")}><Eraser size={18}/> Eraser</button>
       <button className={tool==="move"?"secondary":"ghost"} aria-pressed={tool==="move"} onClick={()=>setTool("move")}><Hand size={18}/> Move page</button>
-      <button className="ghost" aria-label="Undo last stroke in selected answer" disabled={!editable(selected)||!selectedAnswer.strokes.length} onClick={()=>{setRedo([{id:selected,stroke:selectedAnswer.strokes[selectedAnswer.strokes.length-1]},...redo]);update({...latest.current,[selected]:{...selectedAnswer,strokes:selectedAnswer.strokes.slice(0,-1)}});}}><RotateCcw size={18}/> Undo</button>
-      <button className="ghost" disabled={!redo.length||!editable(redo[0]?.id??"")} onClick={()=>{const [item,...rest]=redo;const answer=latest.current[item.id]??{strokes:[],text:""};update({...latest.current,[item.id]:{...answer,strokes:[...answer.strokes,item.stroke]}});setRedo(rest);}}><RotateCw size={18}/> Redo</button>
+      <button className="ghost" aria-label="Undo last stroke in selected answer" disabled={!editable(selected)||!selectedAnswer.strokes.length} onClick={undoStroke}><RotateCcw size={18}/> Undo</button>
+      <button className="ghost" disabled={!redo.length||!editable(redo[0]?.id??"")} onClick={redoStroke}><RotateCw size={18}/> Redo</button>
       <Link className="button ghost" href={`/print/${assignmentId}?page=${pageIndex}`} target="_blank"><Printer size={18}/> Print page</Link><Link className="button ghost" href={`/print/${assignmentId}`} target="_blank">Print all</Link>
       <label className="paper-zoom">Zoom <select aria-label="Paper zoom" value={zoom} onChange={e=>setZoom(Number(e.target.value))}>{[100,125,150,200].map(value=><option key={value} value={value}>{value}%</option>)}</select></label>
       <span className="muted" role="status">{navigating?"Saving page…":grading?"Grading whole page…":covered?"Paused":saving?"Saving in background…":dirty?"Waiting to save…":"Saved"}</span>
     </div>
-    <div className="paper-viewport"><div style={{width:`${zoom}%`,minWidth:"100%"}}><PaperInk questions={questions} title={title} pageIndex={pageIndex} draft={draft} results={feedback?.results??EMPTY_RESULTS} tool={tool} editable={editable} onSelect={setSelected} onWritingChange={writingChanged} onChange={appendStroke}/></div></div>
+    <div className="paper-viewport"><div style={{width:`${zoom}%`,minWidth:"100%"}}><PaperInk questions={questions} title={title} pageIndex={pageIndex} draft={draft} results={feedback?.results??EMPTY_RESULTS} tool={tool} editable={editable} onSelect={selectAnswer} onWritingChange={writingChanged} onChange={appendStroke} readDraft={readDraft}/></div></div>
     <details className="card paper-keyboard"><summary>Keyboard alternative & accessible question text</summary><div className="stack">{questions.map((q,index)=><label className="field" key={q.id}>{pageIndex*10+index+1}. {q.prompt.text}{q.options.length>0&&<small className="muted">{q.options.map((o,i)=>`${String.fromCharCode(65+i)}: ${o.text}`).join(" · ")} · Use letters separated by commas for multiple answers or ordering.</small>}<textarea aria-label={`Answer ${pageIndex*10+index+1}`} rows={2} disabled={!editable(q.id)} value={draft[q.id]?.text??""} onChange={event=>{const answer=latest.current[q.id]??{strokes:[],text:""};update({...latest.current,[q.id]:{...answer,text:event.target.value}});}}/></label>)}</div></details>
     <footer className="paper-submit-bar"><div className="row"><button className="ghost" disabled={pageIndex===0||busy} onClick={()=>void changePage(pageIndex-1)}>← Previous page</button><strong>Page {pageIndex+1} / {pages}</strong><button className="ghost" disabled={pageIndex===pages-1||busy} onClick={()=>void changePage(pageIndex+1)}>Next page →</button></div><div className="row">{!readOnly&&wrong>0&&!retrying&&!busy&&<button className="secondary" onClick={()=>void retryWrong()}>Redo {wrong} wrong {wrong===1?"answer":"answers"}</button>}{!readOnly&&(!feedback||retrying||feedback.status==="failed"||feedback.pending>0)&&<button className="primary" disabled={busy||timer.clock?.state!=="running"} onClick={()=>void submit()}><Send size={18}/>{busy?"Grading page…":retrying?"Submit corrections":"Submit whole page"}</button>}{feedback&&feedback.pending===0&&wrong===0&&<span className="notice success">✓ All correct!</span>}</div></footer>
   </main>;
