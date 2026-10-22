@@ -1,0 +1,2 @@
+import { sql } from "@/lib/db";import { getSession } from "@/lib/auth";import { redirect } from "next/navigation";
+export default async function Page(){const session=await getSession();if(session?.role==="parent")redirect("/parent");if(session?.role==="student")redirect(`/s/${session.studentId}/home`);const [{count}]=await sql<{count:number}[]>`SELECT count(*)::int count FROM parents`;redirect(count?"/login":"/setup");}

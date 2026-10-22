@@ -1,0 +1,10 @@
+import {describe,it,expect} from 'vitest';
+import {emptyAuthorDraft,validateAuthorDraft,authorDraftSchema,QUESTION_TYPES,defaultAnswerKind} from '../lib/worksheet-authoring';
+function valid(){const d=emptyAuthorDraft();d.title='Ten questions';d.questions.forEach((q,i)=>{q.text=`Calculate ${i} + 1`;q.numberValue=String(i+1);});return d;}
+describe('manual worksheet authoring',()=>{
+ it('saves incomplete drafts but blocks incomplete publication',()=>{expect(authorDraftSchema.safeParse(emptyAuthorDraft()).success).toBe(true);expect(validateAuthorDraft(emptyAuthorDraft()).success).toBe(false);});
+ it('requires exactly ten slots',()=>{const d=valid();d.questions.pop();expect(authorDraftSchema.safeParse(d).success).toBe(false);});
+ it('preserves zero and false answers',()=>{const d=valid();d.questions[0].numberValue='0';d.questions[1].type='true_false';d.questions[1].booleanValue='false';const r=validateAuthorDraft(d);expect(r.success).toBe(true);if(r.success){expect(r.data.questions[0].answer).toMatchObject({value:0});expect(r.data.questions[1].answer).toMatchObject({value:false});}});
+ it('validates every supported question format',()=>{const d=valid();QUESTION_TYPES.forEach((type,i)=>{const q=d.questions[i];q.type=type;q.answerKind=defaultAnswerKind(type);q.options=[{id:'a',text:'First'},{id:'b',text:'Second'}];q.selectedOptions=['a'];q.order='B, A';q.accepted='Earth\nearth';q.booleanValue='true';q.criteria=[{label:'Accuracy',description:'Explains the correct idea',weight:'1'}];q.sampleAnswer='A correct explanation.';});const r=validateAuthorDraft(d);expect(r.success).toBe(true);if(r.success)expect(r.data.questions[5].answer).toMatchObject({orderedIds:['b','a']});});
+ it('rejects incomplete order and empty rubric',()=>{const d=valid();d.questions[0].type='ordering';d.questions[0].options=[{id:'a',text:'One'},{id:'b',text:'Two'}];d.questions[0].order='A';expect(validateAuthorDraft(d).success).toBe(false);d.questions[0].type='long_text';expect(validateAuthorDraft(d).success).toBe(false);});
+});

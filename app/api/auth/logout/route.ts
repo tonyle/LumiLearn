@@ -1,0 +1,2 @@
+import { cookies } from "next/headers";import { sql } from "@/lib/db";import { ok } from "@/lib/http";import { SESSION_COOKIE,sha256 } from "@/lib/security";
+export async function POST(){const jar=await cookies();const token=jar.get(SESSION_COOKIE)?.value;if(token)await sql`DELETE FROM sessions WHERE token_hash=${sha256(token)}`;const response=ok({signedOut:true});response.cookies.delete(SESSION_COOKIE);return response;}

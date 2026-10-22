@@ -1,0 +1,9 @@
+{
+ "schemaVersion":"1.0.0","setId":"grade3-math-example","title":"Multiplication practice","description":"Demo imported from another AI","locale":"en-US","grade":"3","subject":"math",
+ "source":{"type":"ai_generated","generator":"External AI","referenceUrls":[],"documentIds":[]},
+ "curriculum":{"framework":"TEKS","standardCodes":[],"alignmentStatus":"unverified"},
+ "questions":[
+  {"externalId":"q1","type":"number","prompt":{"format":"plain","text":"What is 36 × 7?","translationPolicy":"allowed"},"grade":"3","subject":"math","difficulty":"grade_level","tags":["multiplication"],"standardCodes":[],"options":[],"answer":{"kind":"number","value":252,"tolerance":0,"unit":null},"grading":{"mode":"deterministic","maxAttempts":3},"parentExplanation":{"reasoning":"Multiply 36 by 7.","steps":["30 × 7 = 210","6 × 7 = 42","210 + 42 = 252"]},"studentTranslation":{"vi":"36 nhân 7 bằng bao nhiêu?"},"assets":[],"metadata":{}},
+  {"externalId":"q2","type":"single_choice","prompt":{"format":"plain","text":"Which number is even?","translationPolicy":"allowed"},"grade":"3","subject":"math","difficulty":"review","tags":["even-odd"],"standardCodes":[],"options":[{"id":"a","text":"13"},{"id":"b","text":"18"},{"id":"c","text":"21"}],"answer":{"kind":"option_id","optionId":"b"},"grading":{"mode":"deterministic","maxAttempts":3},"parentExplanation":{"reasoning":"Even numbers divide evenly by two.","steps":["18 ÷ 2 = 9 with no remainder"]},"assets":[],"metadata":{}}
+ ]
+}

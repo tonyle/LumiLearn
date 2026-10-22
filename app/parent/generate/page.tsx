@@ -1,0 +1,1 @@
+export default function Generate(){return <div className="stack"><header><span className="eyebrow">Optional AI</span><h1>Generate practice</h1></header><section className="card empty"><h2>AI generation is not configured.</h2><p>Core assignments, deterministic grading, JSON import, and manual worksheet workflows remain available without a paid service.</p></section></div>}

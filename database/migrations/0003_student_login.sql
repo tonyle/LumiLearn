@@ -1,0 +1,11 @@
+BEGIN;
+ALTER TABLE students ADD COLUMN login_name text;
+UPDATE students SET login_name=lower(regexp_replace(nickname,'[^a-zA-Z0-9]','','g')) || '-' || left(id::text,6);
+ALTER TABLE students ALTER COLUMN login_name SET NOT NULL;
+ALTER TABLE students ALTER COLUMN login_name SET DEFAULT ('learner-' || left(gen_random_uuid()::text,8));
+CREATE UNIQUE INDEX students_login_name_unique ON students(lower(login_name));
+ALTER TABLE students ADD COLUMN failed_logins int NOT NULL DEFAULT 0;
+ALTER TABLE students ADD COLUMN locked_until timestamptz;
+DELETE FROM sessions WHERE role='student';
+CREATE INDEX attempts_student_history ON attempts(submission_id,created_at);
+COMMIT;

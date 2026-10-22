@@ -1,0 +1,417 @@
+{
+  "schemaVersion": "1.0.0",
+  "setId": "g5-math-decimal-multiplication-l04-v1",
+  "title": "Grade 5 · Decimal multiplication · 04 · Money in everyday life",
+  "description": "Solve original shopping and budgeting problems. Prices exclude tax. Write each final answer as a number of dollars. Original TEKS-based home practice; not an official Coppell ISD assessment. Each question is worth 10 points.",
+  "locale": "en-US",
+  "grade": "5",
+  "subject": "math",
+  "source": {
+    "type": "ai_generated",
+    "generator": "Codex",
+    "referenceUrls": [
+      "https://www.coppellisd.com/o/cisd/page/mathematics",
+      "https://teadev.tea.texas.gov/sites/default/files/Grade5_TEKS_0819.pdf"
+    ],
+    "documentIds": []
+  },
+  "curriculum": {
+    "framework": "TEKS",
+    "standardCodes": [
+      "5.3(E)"
+    ],
+    "alignmentStatus": "verified"
+  },
+  "questions": [
+    {
+      "externalId": "g5-math-decimal-multiplication-l04-v1-q01",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "One notebook costs $2.35. What is the cost of 4 notebooks before tax? Write the number of dollars.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 9.4,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "2.35 × 4 = 9.4.",
+        "steps": [
+          "Multiply the whole-number digits: 235 × 4.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 9.4."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l04-v1-q02",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A pen costs $1.48. What is the cost of 6 pens before tax? Write the number of dollars.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 8.88,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "1.48 × 6 = 8.88.",
+        "steps": [
+          "Multiply the whole-number digits: 148 × 6.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 8.88."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l04-v1-q03",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A sticker sheet costs $0.85. What is the cost of 9 sheets before tax? Write the number of dollars.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 7.65,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "0.85 × 9 = 7.65.",
+        "steps": [
+          "Multiply the whole-number digits: 85 × 9.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 7.65."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l04-v1-q04",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A museum charges $3.75 per student. What do 8 student tickets cost? Write the number of dollars.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 30.0,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "3.75 × 8 = 30.",
+        "steps": [
+          "Multiply the whole-number digits: 375 × 8.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 30."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l04-v1-q05",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Apples cost $4.60 per kilogram. What do 2.5 kilograms cost before tax? Write the number of dollars.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 11.5,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "4.6 × 2.5 = 11.5.",
+        "steps": [
+          "Multiply the whole-number digits: 46 × 25.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 11.5."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l04-v1-q06",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Fabric costs $2.80 per meter. What do 3.2 meters cost before tax? Write the number of dollars.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 8.96,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "2.8 × 3.2 = 8.96.",
+        "steps": [
+          "Multiply the whole-number digits: 28 × 32.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 8.96."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l04-v1-q07",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Rice costs $1.60 per pound. What do 4.5 pounds cost before tax? Write the number of dollars.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 7.2,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "1.6 × 4.5 = 7.2.",
+        "steps": [
+          "Multiply the whole-number digits: 16 × 45.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 7.2."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l04-v1-q08",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A lunch box costs $6.25. What is the cost of 12 lunch boxes before tax? Write the number of dollars.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 75.0,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "6.25 × 12 = 75.",
+        "steps": [
+          "Multiply the whole-number digits: 625 × 12.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 75."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l04-v1-q09",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A postcard costs $0.36. What is the cost of 25 postcards before tax? Write the number of dollars.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 9.0,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "0.36 × 25 = 9.",
+        "steps": [
+          "Multiply the whole-number digits: 36 × 25.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 9."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l04-v1-q10",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Trail mix costs $5.40 per pound. What do 1.7 pounds cost before tax? Write the number of dollars.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 9.18,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "5.4 × 1.7 = 9.18.",
+        "steps": [
+          "Multiply the whole-number digits: 54 × 17.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 9.18."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    }
+  ]
+}

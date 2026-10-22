@@ -1,0 +1,5 @@
+{
+ "schemaVersion":"1.0.0","setId":"grade3-reading-example","title":"Reading comprehension","locale":"en-US","grade":"3","subject":"reading",
+ "source":{"type":"manual","referenceUrls":[],"documentIds":[]},"curriculum":{"framework":"TEKS","standardCodes":[],"alignmentStatus":"unverified"},
+ "questions":[{"externalId":"read1","type":"single_choice","prompt":{"format":"plain","text":"Mia planted a seed. She watered it each morning. What did Mia do every morning?","translationPolicy":"allowed"},"grade":"3","subject":"reading","difficulty":"review","tags":["comprehension"],"standardCodes":[],"options":[{"id":"a","text":"Watered the seed"},{"id":"b","text":"Picked flowers"},{"id":"c","text":"Fed a bird"}],"answer":{"kind":"option_id","optionId":"a"},"grading":{"mode":"deterministic","maxAttempts":3},"parentExplanation":{"reasoning":"The passage explicitly says Mia watered the seed each morning.","steps":["Find the action described after planting."]},"assets":[],"metadata":{}}]
+}

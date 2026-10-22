@@ -1,0 +1,592 @@
+{
+  "schemaVersion": "1.0.0",
+  "setId": "coppell-demo-grade5-science-v1",
+  "title": "Grade 5 · Science lab",
+  "description": "12 original practice questions covering all 8 response formats. TEKS-informed; not an official Coppell ISD assessment.",
+  "locale": "en-US",
+  "grade": "5",
+  "subject": "science",
+  "source": {
+    "type": "ai_generated",
+    "generator": "LumiLearn sample authoring",
+    "referenceUrls": [
+      "https://www.coppellisd.com/documents/departments/curriculum-%26-instruction/syllabus/24549582",
+      "https://tea.texas.gov/laws-and-rules/state-board-education/teks/grade5-teks-062024-0.pdf"
+    ],
+    "documentIds": []
+  },
+  "curriculum": {
+    "framework": "TEKS",
+    "standardCodes": [],
+    "alignmentStatus": "general_practice"
+  },
+  "questions": [
+    {
+      "externalId": "science-5-01",
+      "type": "single_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Which material is usually the best conductor of electricity?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "5",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "single_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "Rubber"
+        },
+        {
+          "id": "1",
+          "text": "Copper"
+        },
+        {
+          "id": "2",
+          "text": "Dry wood"
+        },
+        {
+          "id": "3",
+          "text": "Plastic"
+        }
+      ],
+      "answer": {
+        "kind": "option_id",
+        "optionId": "1"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: Copper",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-5-02",
+      "type": "multiple_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Choose ALL the changes that form a new substance.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "5",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "multiple_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "An iron nail rusting"
+        },
+        {
+          "id": "1",
+          "text": "Ice melting"
+        },
+        {
+          "id": "2",
+          "text": "Wood burning"
+        },
+        {
+          "id": "3",
+          "text": "Paper being cut"
+        }
+      ],
+      "answer": {
+        "kind": "option_ids",
+        "optionIds": [
+          "0",
+          "2"
+        ]
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: An iron nail rusting, Wood burning",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-5-03",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A closed container has a mass of 150 grams before and after ice inside it melts. What is its mass after melting, in grams? Enter the number only.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "5",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "number"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 150,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: 150",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-5-04",
+      "type": "short_text",
+      "prompt": {
+        "format": "plain",
+        "text": "In a food chain, what do we call an organism, such as grass, that makes its own food using sunlight?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "5",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "short_text"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "text",
+        "accepted": [
+          "producer",
+          "a producer"
+        ],
+        "normalization": "trim_casefold"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Accepted answer: producer, a producer",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-5-05",
+      "type": "ordering",
+      "prompt": {
+        "format": "plain",
+        "text": "Put this food chain in order, starting with the producer.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "5",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "ordering"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "Hawk"
+        },
+        {
+          "id": "1",
+          "text": "Grasshopper"
+        },
+        {
+          "id": "2",
+          "text": "Grass"
+        },
+        {
+          "id": "3",
+          "text": "Frog"
+        }
+      ],
+      "answer": {
+        "kind": "ordered_ids",
+        "orderedIds": [
+          "2",
+          "1",
+          "3",
+          "0"
+        ]
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: Grass, Grasshopper, Frog, Hawk",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-5-06",
+      "type": "true_false",
+      "prompt": {
+        "format": "plain",
+        "text": "A complete, closed circuit is needed for an ordinary battery-powered bulb to light.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "5",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "true_false"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "boolean",
+        "value": true
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: True",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-5-07",
+      "type": "long_text",
+      "prompt": {
+        "format": "plain",
+        "text": "Students compare plant growth with two amounts of light. Name two things they should keep the same to make the investigation fair, and explain why.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "5",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "long_text"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "rubric",
+        "criteria": [
+          {
+            "label": "Understanding",
+            "description": "The response shows the requested idea accurately. Accept clear drawings or age-appropriate language.",
+            "weight": 0.7
+          },
+          {
+            "label": "Explanation",
+            "description": "The learner communicates their thinking or labels their work.",
+            "weight": 0.3
+          }
+        ],
+        "sampleAnswer": "Keep the plant type and amount of water the same so differences in growth can be connected to light."
+      },
+      "grading": {
+        "mode": "parent_review",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Keep the plant type and amount of water the same so differences in growth can be connected to light.",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-5-08",
+      "type": "handwriting",
+      "prompt": {
+        "format": "plain",
+        "text": "Draw a water-cycle model. Use arrows and label evaporation, condensation, and precipitation.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "5",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "handwriting"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "rubric",
+        "criteria": [
+          {
+            "label": "Understanding",
+            "description": "The response shows the requested idea accurately. Accept clear drawings or age-appropriate language.",
+            "weight": 0.7
+          },
+          {
+            "label": "Explanation",
+            "description": "The learner communicates their thinking or labels their work.",
+            "weight": 0.3
+          }
+        ],
+        "sampleAnswer": "Water moves up as vapor, condenses into droplets in clouds, and falls as precipitation; arrows connect these stages."
+      },
+      "grading": {
+        "mode": "parent_review",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Water moves up as vapor, condenses into droplets in clouds, and falls as precipitation; arrows connect these stages.",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-5-09",
+      "type": "single_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Which process breaks rock into smaller pieces without moving those pieces away?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "5",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "single_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "Weathering"
+        },
+        {
+          "id": "1",
+          "text": "Erosion"
+        },
+        {
+          "id": "2",
+          "text": "Deposition"
+        }
+      ],
+      "answer": {
+        "kind": "option_id",
+        "optionId": "0"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: Weathering",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-5-10",
+      "type": "multiple_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Choose ALL the examples of energy being transferred or transformed.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "5",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "multiple_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "A lamp changes electrical energy into light and heat"
+        },
+        {
+          "id": "1",
+          "text": "A moving ball bumps and moves another ball"
+        },
+        {
+          "id": "2",
+          "text": "A book stays still on a table with no described change"
+        }
+      ],
+      "answer": {
+        "kind": "option_ids",
+        "optionIds": [
+          "0",
+          "1"
+        ]
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: A lamp changes electrical energy into light and heat, A moving ball bumps and moves another ball",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-5-11",
+      "type": "single_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Which statement describes a structural adaptation that can help a duck swim?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "5",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "single_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "It has webbed feet"
+        },
+        {
+          "id": "1",
+          "text": "It chooses a pond"
+        },
+        {
+          "id": "2",
+          "text": "It swims every morning"
+        }
+      ],
+      "answer": {
+        "kind": "option_id",
+        "optionId": "0"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: It has webbed feet",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-5-12",
+      "type": "short_text",
+      "prompt": {
+        "format": "plain",
+        "text": "What force pulls objects toward Earth?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "5",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "short_text"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "text",
+        "accepted": [
+          "gravity",
+          "gravitational force"
+        ],
+        "normalization": "trim_casefold"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Accepted answer: gravity, gravitational force",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    }
+  ]
+}

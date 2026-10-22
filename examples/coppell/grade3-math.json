@@ -1,0 +1,566 @@
+{
+  "schemaVersion": "1.0.0",
+  "setId": "coppell-demo-grade3-math-v1",
+  "title": "Grade 3 · Math trail",
+  "description": "12 original practice questions covering all 8 response formats. TEKS-informed; not an official Coppell ISD assessment.",
+  "locale": "en-US",
+  "grade": "3",
+  "subject": "math",
+  "source": {
+    "type": "ai_generated",
+    "generator": "LumiLearn sample authoring",
+    "referenceUrls": [
+      "https://www.coppellisd.com/documents/departments/curriculum-%26-instruction/syllabus/24549582",
+      "https://tea.texas.gov/curriculum-and-instruction/curriculum-standards/grade3-teks-062024.pdf"
+    ],
+    "documentIds": []
+  },
+  "curriculum": {
+    "framework": "TEKS",
+    "standardCodes": [],
+    "alignmentStatus": "general_practice"
+  },
+  "questions": [
+    {
+      "externalId": "math-3-01",
+      "type": "single_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "There are 4 rows of 6 chairs. Which expression finds the total number of chairs?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "single_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "4 + 6"
+        },
+        {
+          "id": "1",
+          "text": "6 − 4"
+        },
+        {
+          "id": "2",
+          "text": "4 × 6"
+        }
+      ],
+      "answer": {
+        "kind": "option_id",
+        "optionId": "2"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: 4 × 6",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-3-02",
+      "type": "multiple_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Choose ALL the fractions equal to one-half.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "multiple_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "2/4"
+        },
+        {
+          "id": "1",
+          "text": "1/3"
+        },
+        {
+          "id": "2",
+          "text": "3/6"
+        },
+        {
+          "id": "3",
+          "text": "4/8"
+        }
+      ],
+      "answer": {
+        "kind": "option_ids",
+        "optionIds": [
+          "0",
+          "2",
+          "3"
+        ]
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: 2/4, 3/6, 4/8",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-3-03",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A class packs 7 boxes with 8 markers in each box. How many markers are packed?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "number"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 56,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: 56",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-3-04",
+      "type": "short_text",
+      "prompt": {
+        "format": "plain",
+        "text": "A polygon has 4 sides that are all the same length and 4 right angles. Name the shape.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "short_text"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "text",
+        "accepted": [
+          "square",
+          "a square"
+        ],
+        "normalization": "trim_casefold"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Accepted answer: square, a square",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-3-05",
+      "type": "ordering",
+      "prompt": {
+        "format": "plain",
+        "text": "Put the fractions in order from least to greatest.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "ordering"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "3/4"
+        },
+        {
+          "id": "1",
+          "text": "1/4"
+        },
+        {
+          "id": "2",
+          "text": "4/4"
+        },
+        {
+          "id": "3",
+          "text": "2/4"
+        }
+      ],
+      "answer": {
+        "kind": "ordered_ids",
+        "orderedIds": [
+          "1",
+          "3",
+          "0",
+          "2"
+        ]
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: 1/4, 2/4, 3/4, 4/4",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-3-06",
+      "type": "true_false",
+      "prompt": {
+        "format": "plain",
+        "text": "A rectangle with side lengths 5 units and 3 units has an area of 15 square units.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "true_false"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "boolean",
+        "value": true
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: True",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-3-07",
+      "type": "long_text",
+      "prompt": {
+        "format": "plain",
+        "text": "Avery says 6 × 4 and 4 × 6 have the same product. Explain with equal groups, an array, or words.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "long_text"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "rubric",
+        "criteria": [
+          {
+            "label": "Understanding",
+            "description": "The response shows the requested idea accurately. Accept clear drawings or age-appropriate language.",
+            "weight": 0.7
+          },
+          {
+            "label": "Explanation",
+            "description": "The learner communicates their thinking or labels their work.",
+            "weight": 0.3
+          }
+        ],
+        "sampleAnswer": "Both products are 24. A 6-by-4 array turned sideways becomes a 4-by-6 array."
+      },
+      "grading": {
+        "mode": "parent_review",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Both products are 24. A 6-by-4 array turned sideways becomes a 4-by-6 array.",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-3-08",
+      "type": "handwriting",
+      "prompt": {
+        "format": "plain",
+        "text": "Draw an array for 3 × 5. Label the rows and columns, then write the product.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "handwriting"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "rubric",
+        "criteria": [
+          {
+            "label": "Understanding",
+            "description": "The response shows the requested idea accurately. Accept clear drawings or age-appropriate language.",
+            "weight": 0.7
+          },
+          {
+            "label": "Explanation",
+            "description": "The learner communicates their thinking or labels their work.",
+            "weight": 0.3
+          }
+        ],
+        "sampleAnswer": "An array of 3 rows and 5 columns, labeled, with a product of 15."
+      },
+      "grading": {
+        "mode": "parent_review",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "An array of 3 rows and 5 columns, labeled, with a product of 15.",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-3-09",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "48 stickers are shared equally among 6 children. How many stickers does each child get?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "number"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 8,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: 8",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-3-10",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A rectangular garden is 8 feet long and 3 feet wide. What is its perimeter in feet? Enter the number only.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "number"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 22,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: 22",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-3-11",
+      "type": "single_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Round 347 to the nearest ten.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "single_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "300"
+        },
+        {
+          "id": "1",
+          "text": "340"
+        },
+        {
+          "id": "2",
+          "text": "350"
+        },
+        {
+          "id": "3",
+          "text": "400"
+        }
+      ],
+      "answer": {
+        "kind": "option_id",
+        "optionId": "2"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: 350",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-3-12",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A library has 245 storybooks and 178 nonfiction books. How many books is that in all?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "number"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 423,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: 423",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    }
+  ]
+}

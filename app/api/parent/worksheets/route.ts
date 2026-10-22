@@ -1,0 +1,4 @@
+import {z} from 'zod';import {sql} from '@/lib/db';import {bodyJson,ok} from '@/lib/http';import {authorDraftSchema} from '@/lib/worksheet-authoring';import {parentMutation,worksheetError} from '@/lib/worksheet-store';
+export async function POST(request:Request){try{const parentId=await parentMutation(request);const body=z.object({creationKey:z.string().regex(/^[a-f0-9]{32}$/),draft:authorDraftSchema}).strict().parse(await bodyJson(request,2_000_000));
+ const data=await sql.begin(async tx=>{await tx`SELECT pg_advisory_xact_lock(hashtext(${body.creationKey}))`;let [row]=await tx`SELECT id,revision,payload,assignment_id FROM worksheet_drafts WHERE creation_key=${body.creationKey}`;if(!row)[row]=await tx`INSERT INTO worksheet_drafts(created_by,creation_key,payload) VALUES(${parentId},${body.creationKey},${tx.json(body.draft)}) RETURNING id,revision,payload,assignment_id`;return row;});return ok(data,201);
+ }catch(error){return worksheetError(error);}}

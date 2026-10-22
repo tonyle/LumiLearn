@@ -1,0 +1,1 @@
+import { sql } from "@/lib/db";import { fail,ok } from "@/lib/http";export async function GET(){try{await sql`SELECT 1`;return ok({status:"ready"});}catch{return fail("NOT_READY","Database unavailable.",503);}}

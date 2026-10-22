@@ -1,0 +1,1 @@
+import { ImportWizard } from "@/components/import-wizard";export default function ImportPage(){return <div className="stack"><header><span className="eyebrow">Portable by design</span><h1>Import questions from any AI</h1><p className="muted">Validate first, inspect every item, then commit in one transaction.</p></header><ImportWizard/></div>}

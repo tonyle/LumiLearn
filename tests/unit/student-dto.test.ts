@@ -1,0 +1,2 @@
+import { describe,expect,it } from "vitest";
+describe("student API contract",()=>{it("contains only safe grading result fields",()=>{const result={questionId:"q",status:"incorrect",canRetry:true,attemptNumber:1,feedbackCode:"answer_incorrect"};const serialized=JSON.stringify(result);for(const forbidden of ["answer_key","answerKey","solution","private_reason","rubric","sampleAnswer"])expect(serialized).not.toContain(forbidden)})});

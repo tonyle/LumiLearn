@@ -1,0 +1,2 @@
+import {parentPage} from '@/lib/parent-page';import {sql} from '@/lib/db';import {WorksheetEditor} from '@/components/worksheet-editor';import type {LearnerChoice} from '@/lib/worksheet-authoring';
+export default async function CreateWorksheet(){await parentPage();const students=await sql<LearnerChoice[]>`SELECT id,nickname,grade FROM students WHERE active=true ORDER BY grade,nickname`;return <WorksheetEditor students={students}/>;}

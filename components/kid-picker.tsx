@@ -1,0 +1,9 @@
+'use client';
+import {useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {ArrowRight,LockKeyhole} from 'lucide-react';
+export function KidPicker({students}:{students:{id:string;nickname:string;grade:string;login_name:string}[]}) {
+ const router=useRouter();const [name,setName]=useState('');const [pin,setPin]=useState('');const [error,setError]=useState('');const [busy,setBusy]=useState(false);
+ async function login(e:React.FormEvent){e.preventDefault();setBusy(true);setError('');try{const r=await fetch('/api/auth/student/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({loginName:name,pin})});const j=await r.json();if(!r.ok){setError(j.error?.message||'Please try again.');return;}router.push(`/s/${j.data.studentId}/home`);router.refresh();}catch{setError('Could not connect. Please try again.');}finally{setBusy(false);}}
+ return <div className="stack"><div className="learner-choices">{students.map(s=><button key={s.id} className={`learner-choice ${name===s.login_name?'selected':''}`} onClick={()=>{setName(s.login_name);setPin('');setError('');}}><span className="avatar">{s.nickname[0]}</span><strong>{s.nickname}</strong><small>Grade {s.grade}</small></button>)}</div><form className="stack" onSubmit={login}><label className="field">Username<input autoComplete="username" required value={name} onChange={e=>setName(e.target.value)}/></label><label className="field">Your six-digit PIN<input type="password" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="current-password" required value={pin} onChange={e=>setPin(e.target.value.replace(/\D/g,''))}/></label>{error&&<div role="alert" className="notice">{error}</div>}<button className="primary" disabled={busy}>{busy?'Signing in…':'Let’s learn'}<ArrowRight size={18}/></button><small className="muted"><LockKeyhole size={13}/> Need a PIN? Ask your parent to set one in Students.</small></form></div>;
+}

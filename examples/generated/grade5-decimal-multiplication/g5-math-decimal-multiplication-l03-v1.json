@@ -1,0 +1,462 @@
+{
+  "schemaVersion": "1.0.0",
+  "setId": "g5-math-decimal-multiplication-l03-v1",
+  "title": "Grade 5 · Decimal multiplication · 03 · Area and place value",
+  "description": "Build area models and connect decimal products to partial products. Draw models for the first four questions. Original TEKS-based home practice; not an official Coppell ISD assessment. Each question is worth 10 points.",
+  "locale": "en-US",
+  "grade": "5",
+  "subject": "math",
+  "source": {
+    "type": "ai_generated",
+    "generator": "Codex",
+    "referenceUrls": [
+      "https://www.coppellisd.com/o/cisd/page/mathematics",
+      "https://teadev.tea.texas.gov/sites/default/files/Grade5_TEKS_0819.pdf"
+    ],
+    "documentIds": []
+  },
+  "curriculum": {
+    "framework": "TEKS",
+    "standardCodes": [
+      "5.3(D)",
+      "5.3(E)"
+    ],
+    "alignmentStatus": "verified"
+  },
+  "questions": [
+    {
+      "externalId": "g5-math-decimal-multiplication-l03-v1-q01",
+      "type": "handwriting",
+      "prompt": {
+        "format": "plain",
+        "text": "Draw a hundredths-grid area model for 0.2 × 0.7. Label both side lengths and the overlapping area. Write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(D)",
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "rubric",
+        "criteria": [
+          {
+            "label": "Area model",
+            "description": "Draws a rectangle with dimensions 0.2 and 0.7, labels the side lengths, and partitions or shades it consistently with decimal place value. A correctly labeled partial-products area model is acceptable.",
+            "weight": 0.6
+          },
+          {
+            "label": "Product",
+            "description": "Writes the correct product 0.14 and connects it to the model. Equivalent trailing zeros are acceptable.",
+            "weight": 0.4
+          }
+        ],
+        "sampleAnswer": "A rectangle labeled 0.2 by 0.7, partitioned by ones and tenths or shown on a hundredths grid, with the shaded/combined area labeled 0.14."
+      },
+      "grading": {
+        "mode": "ai",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "0.2 × 0.7 = 0.14.",
+        "steps": [
+          "Draw and label a rectangle with side lengths 0.2 and 0.7.",
+          "Partition the sides by place value or use a hundredths grid. Label the partial areas and combine them.",
+          "The total area is 0.14 square units."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l03-v1-q02",
+      "type": "handwriting",
+      "prompt": {
+        "format": "plain",
+        "text": "Draw a hundredths-grid area model for 0.6 × 0.8. Label both side lengths and the overlapping area. Write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(D)",
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "rubric",
+        "criteria": [
+          {
+            "label": "Area model",
+            "description": "Draws a rectangle with dimensions 0.6 and 0.8, labels the side lengths, and partitions or shades it consistently with decimal place value. A correctly labeled partial-products area model is acceptable.",
+            "weight": 0.6
+          },
+          {
+            "label": "Product",
+            "description": "Writes the correct product 0.48 and connects it to the model. Equivalent trailing zeros are acceptable.",
+            "weight": 0.4
+          }
+        ],
+        "sampleAnswer": "A rectangle labeled 0.6 by 0.8, partitioned by ones and tenths or shown on a hundredths grid, with the shaded/combined area labeled 0.48."
+      },
+      "grading": {
+        "mode": "ai",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "0.6 × 0.8 = 0.48.",
+        "steps": [
+          "Draw and label a rectangle with side lengths 0.6 and 0.8.",
+          "Partition the sides by place value or use a hundredths grid. Label the partial areas and combine them.",
+          "The total area is 0.48 square units."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l03-v1-q03",
+      "type": "handwriting",
+      "prompt": {
+        "format": "plain",
+        "text": "Draw an area model for 1.5 × 0.4. Split 1.5 into ones and tenths, label the partial areas, and write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(D)",
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "rubric",
+        "criteria": [
+          {
+            "label": "Area model",
+            "description": "Draws a rectangle with dimensions 1.5 and 0.4, labels the side lengths, and partitions or shades it consistently with decimal place value. A correctly labeled partial-products area model is acceptable.",
+            "weight": 0.6
+          },
+          {
+            "label": "Product",
+            "description": "Writes the correct product 0.6 and connects it to the model. Equivalent trailing zeros are acceptable.",
+            "weight": 0.4
+          }
+        ],
+        "sampleAnswer": "A rectangle labeled 1.5 by 0.4, partitioned by ones and tenths or shown on a hundredths grid, with the shaded/combined area labeled 0.6."
+      },
+      "grading": {
+        "mode": "ai",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "1.5 × 0.4 = 0.6.",
+        "steps": [
+          "Draw and label a rectangle with side lengths 1.5 and 0.4.",
+          "Partition the sides by place value or use a hundredths grid. Label the partial areas and combine them.",
+          "The total area is 0.6 square units."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l03-v1-q04",
+      "type": "handwriting",
+      "prompt": {
+        "format": "plain",
+        "text": "Draw an area model for 2.4 × 1.3. Partition both side lengths by place value, label the partial areas, and write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(D)",
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "rubric",
+        "criteria": [
+          {
+            "label": "Area model",
+            "description": "Draws a rectangle with dimensions 2.4 and 1.3, labels the side lengths, and partitions or shades it consistently with decimal place value. A correctly labeled partial-products area model is acceptable.",
+            "weight": 0.6
+          },
+          {
+            "label": "Product",
+            "description": "Writes the correct product 3.12 and connects it to the model. Equivalent trailing zeros are acceptable.",
+            "weight": 0.4
+          }
+        ],
+        "sampleAnswer": "A rectangle labeled 2.4 by 1.3, partitioned by ones and tenths or shown on a hundredths grid, with the shaded/combined area labeled 3.12."
+      },
+      "grading": {
+        "mode": "ai",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "2.4 × 1.3 = 3.12.",
+        "steps": [
+          "Draw and label a rectangle with side lengths 2.4 and 1.3.",
+          "Partition the sides by place value or use a hundredths grid. Label the partial areas and combine them.",
+          "The total area is 3.12 square units."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l03-v1-q05",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Use partial products to find 3.6 × 0.7. Show the products for the ones and tenths, then write the total.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 2.52,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "3.6 × 0.7 = 2.52.",
+        "steps": [
+          "Multiply the whole-number digits: 36 × 7.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 2.52."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l03-v1-q06",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Use the distributive property to find 4.2 × 1.5. Show your partial products and write the total.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 6.3,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "4.2 × 1.5 = 6.3.",
+        "steps": [
+          "Multiply the whole-number digits: 42 × 15.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 6.3."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l03-v1-q07",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Use a place-value strategy to find 2.7 × 3.4. Show your work and write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 9.18,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "2.7 × 3.4 = 9.18.",
+        "steps": [
+          "Multiply the whole-number digits: 27 × 34.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 9.18."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l03-v1-q08",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Use hundredths to find 0.09 × 7. Show your work and write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 0.63,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "0.09 × 7 = 0.63.",
+        "steps": [
+          "Multiply the whole-number digits: 9 × 7.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 0.63."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l03-v1-q09",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Break 1.06 into place-value parts to find 1.06 × 8. Write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 8.48,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "1.06 × 8 = 8.48.",
+        "steps": [
+          "Multiply the whole-number digits: 106 × 8.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 8.48."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l03-v1-q10",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Use partial products to find 5.8 × 2.6. Show your work and write the total.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 15.08,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "5.8 × 2.6 = 15.08.",
+        "steps": [
+          "Multiply the whole-number digits: 58 × 26.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 15.08."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    }
+  ]
+}

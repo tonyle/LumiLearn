@@ -1,0 +1,593 @@
+{
+  "schemaVersion": "1.0.0",
+  "setId": "coppell-demo-grade3-science-v1",
+  "title": "Grade 3 · Science detectives",
+  "description": "12 original practice questions covering all 8 response formats. TEKS-informed; not an official Coppell ISD assessment.",
+  "locale": "en-US",
+  "grade": "3",
+  "subject": "science",
+  "source": {
+    "type": "ai_generated",
+    "generator": "LumiLearn sample authoring",
+    "referenceUrls": [
+      "https://www.coppellisd.com/documents/departments/curriculum-%26-instruction/syllabus/24549582",
+      "https://tea.texas.gov/curriculum-and-instruction/curriculum-standards/grade3-teks-062024.pdf"
+    ],
+    "documentIds": []
+  },
+  "curriculum": {
+    "framework": "TEKS",
+    "standardCodes": [],
+    "alignmentStatus": "general_practice"
+  },
+  "questions": [
+    {
+      "externalId": "science-3-01",
+      "type": "single_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Which tool is best for measuring the temperature of water?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "single_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "Ruler"
+        },
+        {
+          "id": "1",
+          "text": "Thermometer"
+        },
+        {
+          "id": "2",
+          "text": "Hand lens"
+        }
+      ],
+      "answer": {
+        "kind": "option_id",
+        "optionId": "1"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: Thermometer",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-3-02",
+      "type": "multiple_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Choose ALL the objects that are usually attracted to a magnet.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "multiple_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "Iron nail"
+        },
+        {
+          "id": "1",
+          "text": "Wooden block"
+        },
+        {
+          "id": "2",
+          "text": "Steel paper clip"
+        },
+        {
+          "id": "3",
+          "text": "Plastic spoon"
+        }
+      ],
+      "answer": {
+        "kind": "option_ids",
+        "optionIds": [
+          "0",
+          "2"
+        ]
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: Iron nail, Steel paper clip",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-3-03",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A seedling is 4 centimeters tall on Monday and 9 centimeters tall on Friday. How many centimeters did it grow?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "number"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 5,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: 5",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-3-04",
+      "type": "short_text",
+      "prompt": {
+        "format": "plain",
+        "text": "What is the name of the state of matter that keeps its own shape and volume?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "short_text"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "text",
+        "accepted": [
+          "solid",
+          "a solid"
+        ],
+        "normalization": "trim_casefold"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Accepted answer: solid, a solid",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-3-05",
+      "type": "ordering",
+      "prompt": {
+        "format": "plain",
+        "text": "Put the stages of a butterfly life cycle in order, beginning with the egg.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "ordering"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "Adult butterfly"
+        },
+        {
+          "id": "1",
+          "text": "Pupa"
+        },
+        {
+          "id": "2",
+          "text": "Egg"
+        },
+        {
+          "id": "3",
+          "text": "Larva (caterpillar)"
+        }
+      ],
+      "answer": {
+        "kind": "ordered_ids",
+        "orderedIds": [
+          "2",
+          "3",
+          "1",
+          "0"
+        ]
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: Egg, Larva (caterpillar), Pupa, Adult butterfly",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-3-06",
+      "type": "true_false",
+      "prompt": {
+        "format": "plain",
+        "text": "A push or pull can change the motion of an object.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "true_false"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "boolean",
+        "value": true
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: True",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-3-07",
+      "type": "long_text",
+      "prompt": {
+        "format": "plain",
+        "text": "Two toy cars roll down the same ramp. One rolls on carpet and one on a smooth floor. Predict which may travel farther and explain why.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "long_text"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "rubric",
+        "criteria": [
+          {
+            "label": "Understanding",
+            "description": "The response shows the requested idea accurately. Accept clear drawings or age-appropriate language.",
+            "weight": 0.7
+          },
+          {
+            "label": "Explanation",
+            "description": "The learner communicates their thinking or labels their work.",
+            "weight": 0.3
+          }
+        ],
+        "sampleAnswer": "The car on the smooth floor may travel farther because the carpet usually provides more friction."
+      },
+      "grading": {
+        "mode": "parent_review",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "The car on the smooth floor may travel farther because the carpet usually provides more friction.",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-3-08",
+      "type": "handwriting",
+      "prompt": {
+        "format": "plain",
+        "text": "Draw a simple habitat for a bird. Label a source of food, water, and shelter.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "handwriting"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "rubric",
+        "criteria": [
+          {
+            "label": "Understanding",
+            "description": "The response shows the requested idea accurately. Accept clear drawings or age-appropriate language.",
+            "weight": 0.7
+          },
+          {
+            "label": "Explanation",
+            "description": "The learner communicates their thinking or labels their work.",
+            "weight": 0.3
+          }
+        ],
+        "sampleAnswer": "A labeled habitat with food, water, and shelter that could support a bird."
+      },
+      "grading": {
+        "mode": "parent_review",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "A labeled habitat with food, water, and shelter that could support a bird.",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-3-09",
+      "type": "single_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "A puddle slowly dries on a warm day. What happens to much of the water?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "single_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "It evaporates into the air"
+        },
+        {
+          "id": "1",
+          "text": "It turns into rock"
+        },
+        {
+          "id": "2",
+          "text": "It disappears forever"
+        }
+      ],
+      "answer": {
+        "kind": "option_id",
+        "optionId": "0"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: It evaporates into the air",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-3-10",
+      "type": "multiple_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Choose ALL the actions that help conserve natural resources.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "multiple_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "Reuse a bottle"
+        },
+        {
+          "id": "1",
+          "text": "Leave a tap running"
+        },
+        {
+          "id": "2",
+          "text": "Recycle clean paper"
+        },
+        {
+          "id": "3",
+          "text": "Turn off unused lights"
+        }
+      ],
+      "answer": {
+        "kind": "option_ids",
+        "optionIds": [
+          "0",
+          "2",
+          "3"
+        ]
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: Reuse a bottle, Recycle clean paper, Turn off unused lights",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-3-11",
+      "type": "single_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Which observation describes a physical property of a rock?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "single_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "It is rough and gray"
+        },
+        {
+          "id": "1",
+          "text": "It wants to roll"
+        },
+        {
+          "id": "2",
+          "text": "It is hungry"
+        }
+      ],
+      "answer": {
+        "kind": "option_id",
+        "optionId": "0"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: It is rough and gray",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "science-3-12",
+      "type": "short_text",
+      "prompt": {
+        "format": "plain",
+        "text": "A plant grows toward light from a window. Which resource is it responding to?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "3",
+      "subject": "science",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "short_text"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "text",
+        "accepted": [
+          "light",
+          "sunlight"
+        ],
+        "normalization": "trim_casefold"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Accepted answer: light, sunlight",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    }
+  ]
+}

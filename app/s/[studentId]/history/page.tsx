@@ -1,0 +1,2 @@
+import {requireRole} from '@/lib/auth';import {redirect} from 'next/navigation';import {HistoryView} from '@/components/history-view';
+export default async function History({params,searchParams}:{params:Promise<{studentId:string}>;searchParams:Promise<{date?:string}>}){let session;try{session=await requireRole('student');}catch{redirect('/kids');}const {studentId}=await params;if(session.studentId!==studentId)redirect(`/s/${session.studentId}/history`);return <main className="student-main"><HistoryView studentId={studentId} date={(await searchParams).date}/></main>;}

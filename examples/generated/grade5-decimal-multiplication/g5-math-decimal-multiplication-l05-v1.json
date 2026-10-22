@@ -1,0 +1,417 @@
+{
+  "schemaVersion": "1.0.0",
+  "setId": "g5-math-decimal-multiplication-l05-v1",
+  "title": "Grade 5 · Decimal multiplication · 05 · Mixed practice",
+  "description": "Apply decimal multiplication in calculations and real situations. Show a place-value strategy and write an exact answer. Original TEKS-based home practice; not an official Coppell ISD assessment. Each question is worth 10 points.",
+  "locale": "en-US",
+  "grade": "5",
+  "subject": "math",
+  "source": {
+    "type": "ai_generated",
+    "generator": "Codex",
+    "referenceUrls": [
+      "https://www.coppellisd.com/o/cisd/page/mathematics",
+      "https://teadev.tea.texas.gov/sites/default/files/Grade5_TEKS_0819.pdf"
+    ],
+    "documentIds": []
+  },
+  "curriculum": {
+    "framework": "TEKS",
+    "standardCodes": [
+      "5.3(E)"
+    ],
+    "alignmentStatus": "verified"
+  },
+  "questions": [
+    {
+      "externalId": "g5-math-decimal-multiplication-l05-v1-q01",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Find 0.08 × 9. Show your work and write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 0.72,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "0.08 × 9 = 0.72.",
+        "steps": [
+          "Multiply the whole-number digits: 8 × 9.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 0.72."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l05-v1-q02",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Find 1.28 × 7. Show your work and write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 8.96,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "1.28 × 7 = 8.96.",
+        "steps": [
+          "Multiply the whole-number digits: 128 × 7.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 8.96."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l05-v1-q03",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Find 3.7 × 2.8. Show your work and write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 10.36,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "3.7 × 2.8 = 10.36.",
+        "steps": [
+          "Multiply the whole-number digits: 37 × 28.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 10.36."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l05-v1-q04",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Find 4.9 × 0.6. Show your work and write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 2.94,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "4.9 × 0.6 = 2.94.",
+        "steps": [
+          "Multiply the whole-number digits: 49 × 6.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 2.94."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l05-v1-q05",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Find 6.3 × 1.4. Show your work and write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 8.82,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "6.3 × 1.4 = 8.82.",
+        "steps": [
+          "Multiply the whole-number digits: 63 × 14.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 8.82."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l05-v1-q06",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Find 2.75 × 16. Show your work and write the product.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 44.0,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "2.75 × 16 = 44.",
+        "steps": [
+          "Multiply the whole-number digits: 275 × 16.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 44."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l05-v1-q07",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A rectangular garden bed is 1.8 meters wide and 2.7 meters long. What is its area? Write the number of square meters.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 4.86,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "1.8 × 2.7 = 4.86.",
+        "steps": [
+          "Multiply the whole-number digits: 18 × 27.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 4.86."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l05-v1-q08",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "Each bottle holds 0.45 liter of water. How many liters do 14 full bottles hold? Write the number of liters.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 6.3,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "0.45 × 14 = 6.3.",
+        "steps": [
+          "Multiply the whole-number digits: 45 × 14.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 6.3."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l05-v1-q09",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A cyclist travels 3.4 kilometers on one practice lap. Another route is 2.2 times that length. How long is the other route? Write the number of kilometers.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 7.48,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "3.4 × 2.2 = 7.48.",
+        "steps": [
+          "Multiply the whole-number digits: 34 × 22.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 7.48."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    },
+    {
+      "externalId": "g5-math-decimal-multiplication-l05-v1-q10",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A student says 2.9 × 1.8 = 52.2. Use place value to find the correct product. Write only your corrected product as the final answer.",
+        "translationPolicy": "disabled"
+      },
+      "grade": "5",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "decimal-multiplication"
+      ],
+      "standardCodes": [
+        "5.3(E)"
+      ],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 5.22,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "2.9 × 1.8 = 5.22.",
+        "steps": [
+          "Multiply the whole-number digits: 29 × 18.",
+          "The factors have 2 decimal places altogether.",
+          "Place the decimal point to get 5.22."
+        ]
+      },
+      "assets": [],
+      "metadata": {}
+    }
+  ]
+}

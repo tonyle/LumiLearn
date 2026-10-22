@@ -1,0 +1,577 @@
+{
+  "schemaVersion": "1.0.0",
+  "setId": "coppell-demo-grade1-math-v1",
+  "title": "Grade 1 · Number explorers",
+  "description": "12 original practice questions covering all 8 response formats. TEKS-informed; not an official Coppell ISD assessment.",
+  "locale": "en-US",
+  "grade": "1",
+  "subject": "math",
+  "source": {
+    "type": "ai_generated",
+    "generator": "LumiLearn sample authoring",
+    "referenceUrls": [
+      "https://www.coppellisd.com/documents/departments/curriculum-%26-instruction/syllabus/24549582",
+      "https://tea.texas.gov/curriculum-and-instruction/curriculum-standards/grade1-teks-062024.pdf"
+    ],
+    "documentIds": []
+  },
+  "curriculum": {
+    "framework": "TEKS",
+    "standardCodes": [],
+    "alignmentStatus": "general_practice"
+  },
+  "questions": [
+    {
+      "externalId": "math-1-01",
+      "type": "single_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Which number has 2 tens and 4 ones?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "1",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "single_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "42"
+        },
+        {
+          "id": "1",
+          "text": "24"
+        },
+        {
+          "id": "2",
+          "text": "14"
+        }
+      ],
+      "answer": {
+        "kind": "option_id",
+        "optionId": "1"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: 24",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-1-02",
+      "type": "multiple_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Choose ALL the ways to make 10.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "1",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "multiple_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "6 + 4"
+        },
+        {
+          "id": "1",
+          "text": "7 + 2"
+        },
+        {
+          "id": "2",
+          "text": "8 + 2"
+        },
+        {
+          "id": "3",
+          "text": "5 + 5"
+        }
+      ],
+      "answer": {
+        "kind": "option_ids",
+        "optionIds": [
+          "0",
+          "2",
+          "3"
+        ]
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: 6 + 4, 8 + 2, 5 + 5",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-1-03",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "You have 8 crayons. A friend gives you 5 more. How many crayons do you have?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "1",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "number"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 13,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: 13",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-1-04",
+      "type": "short_text",
+      "prompt": {
+        "format": "plain",
+        "text": "A shape has 3 straight sides and 3 corners. What is its name?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "1",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "short_text"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "text",
+        "accepted": [
+          "triangle",
+          "a triangle"
+        ],
+        "normalization": "trim_casefold"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Accepted answer: triangle, a triangle",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-1-05",
+      "type": "ordering",
+      "prompt": {
+        "format": "plain",
+        "text": "Put these numbers in order from smallest to largest.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "1",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "ordering"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "17"
+        },
+        {
+          "id": "1",
+          "text": "9"
+        },
+        {
+          "id": "2",
+          "text": "12"
+        },
+        {
+          "id": "3",
+          "text": "5"
+        }
+      ],
+      "answer": {
+        "kind": "ordered_ids",
+        "orderedIds": [
+          "3",
+          "1",
+          "2",
+          "0"
+        ]
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: 5, 9, 12, 17",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-1-06",
+      "type": "true_false",
+      "prompt": {
+        "format": "plain",
+        "text": "The number 46 is greater than 64.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "1",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "true_false"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "boolean",
+        "value": false
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: False",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-1-07",
+      "type": "long_text",
+      "prompt": {
+        "format": "plain",
+        "text": "Sam has 9 blocks and gets 3 more. Tell how you can make a group of ten to find the total. One short sentence is enough.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "1",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "long_text"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "rubric",
+        "criteria": [
+          {
+            "label": "Understanding",
+            "description": "The response shows the requested idea accurately. Accept clear drawings or age-appropriate language.",
+            "weight": 0.7
+          },
+          {
+            "label": "Explanation",
+            "description": "The learner communicates their thinking or labels their work.",
+            "weight": 0.3
+          }
+        ],
+        "sampleAnswer": "Move 1 of the 3 blocks to the 9 to make 10, then add the remaining 2: 12."
+      },
+      "grading": {
+        "mode": "parent_review",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Move 1 of the 3 blocks to the 9 to make 10, then add the remaining 2: 12.",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-1-08",
+      "type": "handwriting",
+      "prompt": {
+        "format": "plain",
+        "text": "Draw 14 dots in two groups: one group of ten and the leftover ones. Write the number 14.",
+        "translationPolicy": "allowed"
+      },
+      "grade": "1",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "handwriting"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "rubric",
+        "criteria": [
+          {
+            "label": "Understanding",
+            "description": "The response shows the requested idea accurately. Accept clear drawings or age-appropriate language.",
+            "weight": 0.7
+          },
+          {
+            "label": "Explanation",
+            "description": "The learner communicates their thinking or labels their work.",
+            "weight": 0.3
+          }
+        ],
+        "sampleAnswer": "A group of 10 dots, a group of 4 dots, and the numeral 14."
+      },
+      "grading": {
+        "mode": "parent_review",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "A group of 10 dots, a group of 4 dots, and the numeral 14.",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-1-09",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "There are 16 birds on a fence. 7 fly away. How many birds stay?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "1",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "number"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 9,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: 9",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-1-10",
+      "type": "single_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "Which coin is worth 10 cents?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "1",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "single_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "Penny"
+        },
+        {
+          "id": "1",
+          "text": "Nickel"
+        },
+        {
+          "id": "2",
+          "text": "Dime"
+        },
+        {
+          "id": "3",
+          "text": "Quarter"
+        }
+      ],
+      "answer": {
+        "kind": "option_id",
+        "optionId": "2"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: Dime",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-1-11",
+      "type": "number",
+      "prompt": {
+        "format": "plain",
+        "text": "A ribbon is 7 cubes long. Another ribbon is 4 cubes long. How many cubes longer is the first ribbon?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "1",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "number"
+      ],
+      "standardCodes": [],
+      "options": [],
+      "answer": {
+        "kind": "number",
+        "value": 3,
+        "tolerance": 0,
+        "unit": null
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Expected result: 3",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    },
+    {
+      "externalId": "math-1-12",
+      "type": "single_choice",
+      "prompt": {
+        "format": "plain",
+        "text": "The minute hand points to 6 and the hour hand is between 3 and 4. What time is it?",
+        "translationPolicy": "allowed"
+      },
+      "grade": "1",
+      "subject": "math",
+      "difficulty": "grade_level",
+      "tags": [
+        "demo",
+        "coppell-practice",
+        "single_choice"
+      ],
+      "standardCodes": [],
+      "options": [
+        {
+          "id": "0",
+          "text": "3:00"
+        },
+        {
+          "id": "1",
+          "text": "3:30"
+        },
+        {
+          "id": "2",
+          "text": "6:15"
+        }
+      ],
+      "answer": {
+        "kind": "option_id",
+        "optionId": "1"
+      },
+      "grading": {
+        "mode": "deterministic",
+        "maxAttempts": 3
+      },
+      "parentExplanation": {
+        "reasoning": "Correct selection: 3:30",
+        "steps": []
+      },
+      "assets": [],
+      "metadata": {
+        "purpose": "interaction-and-grade-level-practice",
+        "alignmentNote": "Original TEKS-informed practice; district pacing and individual standard alignment have not been verified."
+      }
+    }
+  ]
+}

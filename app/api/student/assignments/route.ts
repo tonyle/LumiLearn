@@ -1,0 +1,2 @@
+import { requireRole } from "@/lib/auth";import { sql } from "@/lib/db";import { fail,ok } from "@/lib/http";
+export async function GET(){try{const s=await requireRole("student");const rows=await sql`SELECT a.id,a.title,a.description,a.due_at FROM assignment_students ast JOIN assignments a ON a.id=ast.assignment_id WHERE ast.student_id=${s.studentId} AND a.state='assigned' ORDER BY a.due_at NULLS LAST`;return ok(rows);}catch{return fail("UNAUTHORIZED","Student sign-in required.",401);}}

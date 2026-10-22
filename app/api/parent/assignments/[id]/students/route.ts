@@ -1,0 +1,8 @@
+import {z} from 'zod';import {sql} from '@/lib/db';import {bodyJson,ok} from '@/lib/http';import {parentMutation,worksheetError,WorksheetError,learnerIdsSchema,validateLearners} from '@/lib/worksheet-store';
+export async function POST(request:Request,{params}:{params:Promise<{id:string}>}){try{const parentId=await parentMutation(request);const id=z.string().uuid().parse((await params).id),body=z.object({studentIds:learnerIdsSchema}).strict().parse(await bodyJson(request,20000));
+ const data=await sql.begin(async tx=>{const [a]=await tx`SELECT state FROM assignments WHERE id=${id} FOR UPDATE`;if(!a)throw new WorksheetError('NOT_FOUND','Worksheet not found.',404);if(a.state==='closed')throw new WorksheetError('CLOSED','Earlier worksheet versions are read only. Create a new ten-question worksheet.');const [count]=await tx`SELECT count(*)::int count FROM assignment_questions WHERE assignment_id=${id}`;if(count.count!==10)throw new WorksheetError('TEN_QUESTIONS_REQUIRED','A worksheet must contain exactly ten questions before assignment.');await validateLearners(tx,body.studentIds);
+ let added=0;for(const studentId of body.studentIds){const inserted=await tx`INSERT INTO assignment_students(assignment_id,student_id) VALUES(${id},${studentId}) ON CONFLICT DO NOTHING RETURNING student_id`;added+=inserted.length;}
+ await tx`UPDATE assignments SET state='assigned',updated_at=now() WHERE id=${id}`;
+ await tx`INSERT INTO audit_events(actor_role,actor_parent_id,action,entity_type,entity_id,metadata) VALUES('parent',${parentId},'students_assigned','assignment',${id},${tx.json({added})})`;
+ return {assignmentId:id,added};});return ok(data);
+ }catch(error){return worksheetError(error);}}
