@@ -1,0 +1,1 @@
+import {parentPage} from '@/lib/parent-page';import {ResourceDetail} from '@/components/resource-detail';export default async function Resource({params}:{params:Promise<{id:string}>}){const session=await parentPage();return <ResourceDetail id={(await params).id} session={session}/>;}

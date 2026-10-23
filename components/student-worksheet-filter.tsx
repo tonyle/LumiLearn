@@ -1,0 +1,4 @@
+'use client';
+import {useTransition} from 'react';import {useRouter} from 'next/navigation';import {ListFilter} from 'lucide-react';
+import {WORKSHEET_FILTERS} from '@/lib/student-worksheet-filters';
+export function StudentWorksheetFilter({value,subject,basePath}:{value:string;subject:string;basePath:string}){const router=useRouter();const [pending,startTransition]=useTransition();return <label className="worksheet-status-filter"><ListFilter size={17}/><span className="sr-only">Worksheet status</span><select aria-label="Worksheet status" value={value} disabled={pending} onChange={event=>{const status=event.target.value;startTransition(()=>router.push(`${basePath}?${new URLSearchParams({subject,status})}`,{scroll:false}));}}>{WORKSHEET_FILTERS.map(filter=><option key={filter.value} value={filter.value}>{filter.label}</option>)}</select>{pending&&<span className="sr-only" role="status">Updating worksheets…</span>}</label>;}

@@ -1,0 +1,1 @@
+import {saveVocabLesson} from '@/lib/vocab-lessons';import {resourceError} from '@/lib/resource-store';import {ok} from '@/lib/http';export async function POST(r:Request){try{return ok(await saveVocabLesson(r),201);}catch(e){return resourceError(e);}}

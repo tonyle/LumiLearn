@@ -1,0 +1,1 @@
+import {vocabRun,vocabRunView,vocabSession} from '@/lib/vocab-store';import {resourceError} from '@/lib/resource-store';import {ok} from '@/lib/http';export async function GET(_:Request,{params}:{params:Promise<{id:string}>}){try{const s=await vocabSession();return ok(vocabRunView(await vocabRun((await params).id,s.studentId!)));}catch(e){return resourceError(e);}}

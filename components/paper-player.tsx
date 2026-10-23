@@ -1,11 +1,12 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import {useRouter} from "next/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
 import { missingPaperQuestions } from "@/lib/paper-completion";
 import { useStudyTimer } from "@/hooks/use-study-timer";
 import { StudyTimer } from "./study-timer";
-import { Play,Pause, Eraser, Hand, PenLine, RotateCcw, RotateCw, Send, Printer } from "lucide-react";
+import { Play,Pause, Eraser, Hand, PenLine, RotateCcw, RotateCw, Send, Printer, LogOut } from "lucide-react";
 import { PaperInk } from "./paper-ink";
 import {createPaperSaver} from "@/lib/paper-save-client";
 import { QUESTIONS_PER_PAGE, type InkStroke, type PaperDraft, type PaperFeedback, type PaperQuestion, type PaperResult, type PaperState } from "@/lib/paper";
@@ -17,6 +18,10 @@ export function PaperPlayer({ assignmentId, studentId, title, questions, aiReady
   return <PaperPage key={page} assignmentId={assignmentId} studentId={studentId} title={title} questions={questions.slice(page*QUESTIONS_PER_PAGE,(page+1)*QUESTIONS_PER_PAGE)} pageIndex={page} pages={pages} navigate={setPage} aiReady={aiReady} readOnly={readOnly}/>;
 }
 function PaperPage({assignmentId,studentId,title,questions,pageIndex,pages,navigate,aiReady,readOnly=false}:{assignmentId:string;studentId:string;title:string;questions:PaperQuestion[];pageIndex:number;pages:number;navigate:(index:number)=>void;aiReady:boolean;initialPage?:number;readOnly?:boolean}) {
+  const router=useRouter();
+  const exitInFlight=useRef(false),flushInk=useRef<(()=>void)|null>(null);
+  const registerInkFlush=useCallback((flush:(()=>void)|null)=>{flushInk.current=flush;},[]);
+  const [exiting,setExiting]=useState(false);
   const endpoint=`/api/student/assignments/${assignmentId}/pages/${pageIndex}`;
   const [draft,setDraft]=useState<PaperDraft>({}),[feedback,setFeedback]=useState<PaperFeedback|null>(null),[loaded,setLoaded]=useState(false),[error,setError]=useState("");
   const [dirty,setDirty]=useState(false);
@@ -28,8 +33,8 @@ function PaperPage({assignmentId,studentId,title,questions,pageIndex,pages,navig
   const revision=useRef(0),latest=useRef<PaperDraft>(EMPTY_DRAFT),saved=useRef<PaperDraft>(EMPTY_DRAFT),queue=useRef<Promise<void>>(Promise.resolve()),submissionKey=useRef<string|null>(null);
   const timer=useStudyTimer(assignmentId,loaded&&!readOnly);
   const [pausing,setPausing]=useState(false),[resuming,setResuming]=useState(false);
-  const covered=!readOnly&&(timer.loading||!timer.clock||timer.clock.state==='paused'&&timer.clock.started||pausing);
-  const busy=submitting||navigating||covered||feedback?.status==="processing";
+  const covered=!readOnly&&(timer.loading||!timer.clock||timer.clock.state==='paused'&&timer.clock.started||pausing||exiting);
+  const busy=submitting||navigating||exiting||covered||feedback?.status==="processing";
   const grading=submitting||feedback?.status==="processing";
   const editing=!readOnly&&timer.clock?.state==="running"&&(!feedback||retrying||feedback.status==="failed"||feedback.status==="draft");
   const editable=useCallback((id:string)=>!busy&&editing&&feedback?.results.find(r=>r.questionId===id)?.status!=="correct"&&feedback?.results.find(r=>r.questionId===id)?.status!=="needs_review",[busy,editing,feedback?.results]);
@@ -73,6 +78,24 @@ function PaperPage({assignmentId,studentId,title,questions,pageIndex,pages,navig
     return()=>clearInterval(timer);
   },[feedback?.status,endpoint]);
   useEffect(()=>{const warn=(event:BeforeUnloadEvent)=>{if(latest.current!==saved.current||submitting){event.preventDefault();}};window.addEventListener("beforeunload",warn);return()=>window.removeEventListener("beforeunload",warn);},[submitting]);
+  async function exitLesson(){
+    if(exitInFlight.current||submitting)return;exitInFlight.current=true;
+    flushInk.current?.();cancelInkUi();setExiting(true);setError("");
+    try{
+      if(!readOnly&&loaded){
+        // Pause immediately, then wait for any earlier background save to settle.
+        // The exit endpoint can persist the final draft even while paused.
+        const paused=timer.clock?.state==='submitted'?Promise.resolve():timer.pause().catch(()=>{});
+        await queue.current.catch(()=>{});await paused;
+        const payload=latest.current;
+        const response=await fetch(`/api/student/assignments/${assignmentId}/exit`,{method:'POST',headers:{'content-type':'application/json'},signal:AbortSignal.timeout(30000),body:JSON.stringify({pageIndex,baseRevision:revision.current,draft:payload})});
+        const json=await response.json();if(!response.ok)throw Error(json.error?.message||'Could not save and exit. Your writing is still here.');
+        revision.current=json.data.revision;saved.current=payload;setDirty(false);timer.apply(json.data.clock);
+      }
+      if(document.fullscreenElement&&document.exitFullscreen)await document.exitFullscreen().catch(()=>{});
+      router.push(`/s/${studentId}/home`);
+    }catch(error){setError(error instanceof Error?error.message:'Could not save and exit. Your writing is still here.');exitInFlight.current=false;setExiting(false);}
+  }
   async function changePage(index:number){setNavigating(true);try{await save();navigate(index);}catch{setNavigating(false);}}
   async function submit(){
     const unanswered=missingPaperQuestions(questions,latest.current,feedback?.results??[],pageIndex);
@@ -88,7 +111,7 @@ function PaperPage({assignmentId,studentId,title,questions,pageIndex,pages,navig
   }
   async function retryWrong(){try{await timer.resume();}catch{setError("Could not resume the timer. Please try again.");return;}const next={...latest.current};for(const result of feedback?.results??[])if(result.status==="incorrect")next[result.questionId]={strokes:[],text:""};setRetrying(true);redoRef.current=[];setRedo([]);update(next);}
   async function pauseLesson(){
-    setPausing(true);
+    flushInk.current?.();cancelInkUi();setPausing(true);
     try{try{await save();}catch{}await timer.pause();}catch{setError("Could not pause on the server. Please try again.");}finally{setPausing(false);}
   }
   async function resumeLesson(){setResuming(true);try{await timer.resume();}catch{setError("Could not resume. Check your connection and try again.");}finally{setResuming(false);}}
@@ -96,11 +119,11 @@ function PaperPage({assignmentId,studentId,title,questions,pageIndex,pages,navig
   function redoStroke(){const [item,...rest]=redoRef.current;if(!item||!editable(item.id))return;redoRef.current=rest;setRedo(rest);selectedRef.current=item.id;setSelected(item.id);const answer=latest.current[item.id]??{strokes:[],text:""};update({...latest.current,[item.id]:{...answer,strokes:[...answer.strokes,item.stroke]}});}
   const wrong=feedback?.results.filter(r=>r.status==="incorrect").length??0;
   const selectedAnswer=draft[selected]??{strokes:[],text:""};
-  if(!loaded)return <main className="student-main"><p role="status">{error||"Loading your paper…"}</p></main>;
+  if(!loaded)return <main className="paper-main"><div className="row"><p role="status">{error||"Loading your paper…"}</p><button className="secondary" onClick={()=>void exitLesson()}><LogOut size={16}/>Exit</button></div></main>;
   return <main className="paper-main stack">
-    <Dialog.Root open={covered} modal><Dialog.Portal><Dialog.Overlay className="study-pause-cover"/><Dialog.Content className="study-pause-dialog" onEscapeKeyDown={e=>e.preventDefault()} onPointerDownOutside={e=>e.preventDefault()} onInteractOutside={e=>e.preventDefault()}><span className="subject-icon"><Pause size={26}/></span><Dialog.Title>{timer.loading?"Getting your lesson ready…":pausing?"Pausing your lesson…":"Your lesson is paused"}</Dialog.Title><Dialog.Description>The questions are hidden. Take your time — your study clock stops while you pause.</Dialog.Description><p className="pause-time">{timer.clock?Math.floor(timer.clock.elapsedMs/60000)+" min "+Math.floor(timer.clock.elapsedMs/1000)%60+" sec":""}</p>{(timer.error||error)&&<p role="alert" className="notice">{timer.error||error}</p>}<button className="primary" disabled={timer.loading||pausing||resuming} onClick={()=>void resumeLesson()}><Play size={19}/>{resuming?"Resuming…":"Resume lesson"}</button></Dialog.Content></Dialog.Portal></Dialog.Root>
+    <Dialog.Root open={covered} modal><Dialog.Portal><Dialog.Overlay className="study-pause-cover"/><Dialog.Content className="study-pause-dialog" onEscapeKeyDown={e=>e.preventDefault()} onPointerDownOutside={e=>e.preventDefault()} onInteractOutside={e=>e.preventDefault()}><span className="subject-icon"><Pause size={26}/></span><Dialog.Title>{exiting?"Saving and exiting…":timer.loading?"Getting your lesson ready…":pausing?"Pausing your lesson…":"Your lesson is paused"}</Dialog.Title><Dialog.Description>The questions are hidden. Take your time — your study clock stops while you pause.</Dialog.Description><p className="pause-time">{timer.clock?Math.floor(timer.clock.elapsedMs/60000)+" min "+Math.floor(timer.clock.elapsedMs/1000)%60+" sec":""}</p>{(timer.error||error)&&<p role="alert" className="notice">{timer.error||error}</p>}<button className="primary" disabled={timer.loading||pausing||resuming||exiting} onClick={()=>void resumeLesson()}><Play size={19}/>{resuming?"Resuming…":"Resume lesson"}</button><button className="secondary" disabled={exiting||pausing||resuming} onClick={()=>void exitLesson()}><LogOut size={18}/>{exiting?"Saving…":"Exit"}</button></Dialog.Content></Dialog.Portal></Dialog.Root>
     <Dialog.Root open={missing.length>0} onOpenChange={open=>{if(!open)setMissing([]);}}><Dialog.Portal><Dialog.Overlay className="completion-overlay"/><Dialog.Content className="completion-dialog"><span className="eyebrow">A little more to do</span><Dialog.Title>Finish every question first</Dialog.Title><Dialog.Description>Please answer all questions on this page before submitting. Your work is saved as you go.</Dialog.Description><p><strong>Unanswered questions: {missing.join(", ")}</strong></p><p className="muted">Write an answer with your pen or use the keyboard alternative.</p><Dialog.Close className="button primary">Keep working</Dialog.Close></Dialog.Content></Dialog.Portal></Dialog.Root>
-    <header className="paper-heading"><div><Link href={`/s/${studentId}/home`} className="muted">← My learning</Link><h1>{title}</h1><p className="muted">Write on the paper. Submit the whole page when you’re finished.</p></div><StudyTimer frozen={grading} clock={timer.clock} onPause={()=>void pauseLesson()} disabled={grading||navigating||readOnly}/><div className="paper-score" aria-live="polite">{feedback&&feedback.status!=="processing"?<><strong>{feedback.pending?`${feedback.earned} earned`:`${feedback.earned} / ${feedback.maximum}`}</strong><span>{feedback.pending?`${feedback.pending} awaiting review`:`${wrong} to retry`}</span></>:<><strong>{questions.length*10} points</strong><span>10 points per question</span></>}</div></header>
+    <header className="paper-heading"><div><span className="eyebrow">Worksheet · Page {pageIndex+1} of {pages}</span><h1>{title}</h1><p className="muted">Write on the paper. Submit the whole page when you’re finished.</p></div><StudyTimer frozen={grading||exiting} onExit={()=>void exitLesson()} exiting={exiting} exitDisabled={submitting||navigating||exiting} clock={timer.clock} onPause={()=>void pauseLesson()} disabled={grading||navigating||readOnly}/><div className="paper-score" aria-live="polite">{feedback&&feedback.status!=="processing"?<><strong>{feedback.pending?`${feedback.earned} earned`:`${feedback.earned} / ${feedback.maximum}`}</strong><span>{feedback.pending?`${feedback.pending} awaiting review`:`${wrong} to retry`}</span></>:<><strong>{questions.length*10} points</strong><span>10 points per question</span></>}</div></header>
     {readOnly&&<p className="notice">Earlier worksheet · Read only. Your original work is preserved. Open a new 10-question lesson to continue practising.</p>}
     {!readOnly&&timer.clock?.state==="submitted"&&(feedback?.status==="failed"||Number(feedback?.pending)>0)&&<button className="secondary" onClick={()=>void resumeLesson()}>Continue working</button>}
     {!aiReady&&<p className="notice">Handwritten work will be saved for your parent to review. You can keep writing on every page.</p>}
@@ -116,7 +139,7 @@ function PaperPage({assignmentId,studentId,title,questions,pageIndex,pages,navig
       <label className="paper-zoom">Zoom <select aria-label="Paper zoom" value={zoom} onChange={e=>setZoom(Number(e.target.value))}>{[100,125,150,200].map(value=><option key={value} value={value}>{value}%</option>)}</select></label>
       <span className="muted" role="status">{navigating?"Saving page…":grading?"Grading whole page…":covered?"Paused":saving?"Saving in background…":dirty?"Waiting to save…":"Saved"}</span>
     </div>
-    <div className="paper-viewport"><div style={{width:`${zoom}%`,minWidth:"100%"}}><PaperInk questions={questions} title={title} pageIndex={pageIndex} draft={draft} results={feedback?.results??EMPTY_RESULTS} tool={tool} editable={editable} onSelect={selectAnswer} onWritingChange={writingChanged} onChange={appendStroke} readDraft={readDraft}/></div></div>
+    <div className="paper-viewport"><div style={{width:`${zoom}%`,minWidth:"100%"}}><PaperInk questions={questions} title={title} pageIndex={pageIndex} draft={draft} results={feedback?.results??EMPTY_RESULTS} tool={tool} editable={editable} onSelect={selectAnswer} onWritingChange={writingChanged} onChange={appendStroke} readDraft={readDraft} onFlushReady={registerInkFlush}/></div></div>
     <details className="card paper-keyboard"><summary>Keyboard alternative & accessible question text</summary><div className="stack">{questions.map((q,index)=><label className="field" key={q.id}>{pageIndex*10+index+1}. {q.prompt.text}{q.options.length>0&&<small className="muted">{q.options.map((o,i)=>`${String.fromCharCode(65+i)}: ${o.text}`).join(" · ")} · Use letters separated by commas for multiple answers or ordering.</small>}<textarea aria-label={`Answer ${pageIndex*10+index+1}`} rows={2} disabled={!editable(q.id)} value={draft[q.id]?.text??""} onChange={event=>{const answer=latest.current[q.id]??{strokes:[],text:""};update({...latest.current,[q.id]:{...answer,text:event.target.value}});}}/></label>)}</div></details>
     <footer className="paper-submit-bar"><div className="row"><button className="ghost" disabled={pageIndex===0||busy} onClick={()=>void changePage(pageIndex-1)}>← Previous page</button><strong>Page {pageIndex+1} / {pages}</strong><button className="ghost" disabled={pageIndex===pages-1||busy} onClick={()=>void changePage(pageIndex+1)}>Next page →</button></div><div className="row">{!readOnly&&wrong>0&&!retrying&&!busy&&<button className="secondary" onClick={()=>void retryWrong()}>Redo {wrong} wrong {wrong===1?"answer":"answers"}</button>}{!readOnly&&(!feedback||retrying||feedback.status==="failed"||feedback.pending>0)&&<button className="primary" disabled={busy||timer.clock?.state!=="running"} onClick={()=>void submit()}><Send size={18}/>{busy?"Grading page…":retrying?"Submit corrections":"Submit whole page"}</button>}{feedback&&feedback.pending===0&&wrong===0&&<span className="notice success">✓ All correct!</span>}</div></footer>
   </main>;

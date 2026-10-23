@@ -1,0 +1,1 @@
+import {parentPage} from '@/lib/parent-page';import {ResourceListView} from '@/components/resource-list-view';import type {ResourceListQuery} from '@/lib/resource-list';export default async function Resources({searchParams}:{searchParams:Promise<ResourceListQuery>}){await parentPage();return <ResourceListView query={await searchParams}/>;}

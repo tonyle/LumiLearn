@@ -123,3 +123,69 @@ Sign in as a parent, open **Worksheets → Create worksheet**, and fill the ten 
 For imported or existing questions, use **Question library → Build from library** and select ten questions of the same grade and subject. After importing JSON, **Create worksheet & assign** opens this flow directly.
 
 Published worksheet content is locked to preserve existing student work. In **Assignments**, use **Assign students** to add more learners without resetting anyone's progress. **Print** opens the Letter paper/PDF flow.
+
+### Turn a photographed worksheet into an assignment
+
+Open **Scan worksheet**, take a photo or choose a file. Uploading opens the private source review screen. Choose its grade and subject, then select **Read with AI & create drafts**. This explicitly sends the file to OpenAI; existing AI opt-in and server API configuration are required. **Transcribe manually** creates a blank draft without external AI.
+
+AI reads at most 50 exercises (PDF inputs: at most 20 pages), splits them into drafts with ten question slots, and leaves missing slots blank. It does not assign automatically or invent questions to fill a page. Open each draft, compare every prompt, illustration and private answer key with **Open original worksheet**, complete any blank slots, then Preview → Choose students → confirm source review → Assign. Existing uploads now have a **Create / review worksheets** link too.
+
+Reading retries reuse already-created drafts. Concurrent reads are prevented; failed reads keep the original file. Extraction warnings are saved with the upload. AI images are resized and normalized server-side; if an HEIC image cannot be decoded, export it as JPEG/PNG. `OPENAI_EXTRACTION_MODEL` optionally overrides the existing `OPENAI_MODEL` for reading.
+
+### Generate multiple worksheets with AI
+
+Open **Parent → Generate worksheets** (`/parent/generate`), choose a grade, subject, topic, difficulty and **1–10 worksheets**. Optional guidance can request particular skills or contexts. Each worksheet contains exactly **10 questions / 100 points** with private answer keys. The topic and guidance are sent to OpenAI; student names and work are not included.
+
+Generation uses `OPENAI_GENERATION_MODEL` when set, otherwise `OPENAI_MODEL` (default `gpt-6-luna`), and requires the same external-AI opt-in and API key as grading. Each provider attempt reserves $0.10 against the shared monthly AI allowance; this is a conservative application allowance, not a quoted provider charge. Grading, photo extraction and generation share a serialized budget check.
+
+Keep the collection page open while it creates worksheets one at a time. Each completed draft is saved immediately. If interrupted, reopen the collection under **Your recent collections** and choose **Continue unfinished worksheets**. A failed worksheet does not discard completed drafts. Duplicate requests reuse the original batch/draft, and an active request cannot be started twice. Review generated content and answer keys in the existing worksheet editor, edit as needed, preview and **Assign** to selected students. AI-generated curriculum alignment is unverified; no official Coppell ISD endorsement is implied.
+
+### Student worksheet list
+
+**My learning** shows a compact list, grouped by subject tabs. **To do** is the default and hides completed submissions while retaining work in progress or awaiting review. Use the small **Worksheet status** selector for **In progress**, **Completed**, or **All worksheets**. Subject counts follow the selected status. Filtering and pagination run on the server, with 12 worksheets per page; switching subjects/status resets to page 1, and page navigation preserves both filters. The URL retains the current view for reload/back navigation. Completed worksheets remain accessible through the filter and My history.
+
+Student **My history** uses the same compact list layout, with subject tabs and an inline day picker. Recent active days and earlier legacy worksheets are collapsed by default. History loads at most 12 submissions per page from the server, preserves day/subject across navigation and links each row to its immutable saved attempt, with that attempt's score and duration.
+
+### Worksheet focus mode and Exit
+
+Opening a worksheet from My learning requests browser fullscreen when the browser supports it and uses a dedicated viewport without student navigation, profile or footer. Browsers that do not support the Fullscreen API still show the same distraction-free application layout. The sticky study-time bar provides **Pause** and **Exit**; the paused overlay also offers Exit.
+
+**Exit** commits any live pen stroke, pauses the clock immediately, waits for pending background writes and sends the latest draft to the save-and-pause endpoint. Navigation back to My learning happens only after that endpoint confirms persistence. Saving can finish while paused, retries of an already-saved payload are idempotent, stale edits cannot overwrite another tab, and correct graded answers remain protected. A connection/save error keeps the worksheet and its unsaved ink on screen for retry. Reopening a paused worksheet retains its accumulated time and waits for **Resume lesson**.
+
+### Learning resources
+
+Parent → **Learning resources** → **Add resource** supports private PDF, Word, PowerPoint and video uploads, or HTTPS links (including YouTube, Facebook and Vimeo). Assign learners in the editor. Office files are converted to a private PDF preview by the isolated `documents` container; original downloads remain available. Students open **Resources**, mark material reviewed, and ask questions. Each learner sees only their own discussion; parents can reply, resolve or reopen threads. Deleting a resource hides it from students; restore it from the Deleted filter.
+
+### Games and learning rewards
+
+Student → **Games** includes **Flappy Flight**, a touch/keyboard canvas game with optional sound, capped difficulty and the **Top Fly** family leaderboard. Parent → **Game rewards** controls each learner’s game access, reward per worksheet, exchange rate, daily play limit and manual point adjustments with a required reason. Defaults: 10 points per all-correct worksheet, 60 seconds per point, 30 minutes/day (America/Chicago).
+
+Rewards are issued once per learner and assignment, after all questions are correct; existing completed worksheets are eligible. Visiting Games or parent rewards reconciles earned points. Exchanges and adjustments have an immutable ledger and idempotency keys. Starting a flight reserves up to five minutes of purchased time on the server. Ending a flight returns unused seconds. Reloading or losing a device does not reset the timer; the outstanding reservation expires, or the learner can end it from Games. Moving to another tab stops the flight and attempts to save unused time. Parent disable stops outstanding flights. Leaderboard scores are computed from deterministic flap replays, not client-provided scores. This is a local family leaderboard, not a competitive anti-cheat service.
+
+**Geometry Dash** is available in the same Games library: an original neon cube runner with tap/Space/Up jumping, rotating cube, spikes, synthesized sounds and gently capped speed. It shares the purchased time balance, daily cap, parent controls, expiry autosave and one-active-game restriction with Flappy Flight. **Top Dash** and **Top Fly** are separate; the server chooses the correct deterministic replay from the stored game code. No original Geometry Dash assets, music or levels are bundled.
+
+**Math Meadow Run** adds a garden adventure with a touch keypad and two trails: addition/subtraction with operands and answers in 0–20, and multiplication/exact division using tables 1–9. The runner waits while the learner thinks; a server-checked correct answer animates a jump over the wall, while an incorrect answer keeps the same question and offers a hint. Every cleared wall earns one game score, with separate trail leaderboards. Game scores do not create learning reward points. The existing shared play-time wallet, parent controls, save-and-exit, and timeout auto-save apply.
+
+### Grade 1 Vocabulary Studio
+
+Parent → **Vocabulary Studio** provides a word library, manual editing, and import of plain word lists, CSV or JSON (up to 30 words). A downloadable starter CSV is available in the import form. Optional columns: meaning, Vietnamese translation, example sentence, parent-checked sound-spelling chunks (e.g. `sh|i|p`), and picture description. Common nouns have bundled instant illustrations. Other words use the configured OpenAI image model (`OPENAI_VOCAB_IMAGE_MODEL`, default `gpt-image-2.5-flare`), with existing AI consent/settings and the shared monthly budget. Each AI attempt reserves a conservative $0.25 budget allowance; this is not a claim of the provider's exact charge. Images remain in the private uploads volume. Picture regeneration preserves the previous picture if it fails.
+
+Check each picture, then **Create worksheet**: select 1–10 distinct words, activities and learners. Picture matching needs at least three words. Start with 3–5 meaningful, familiar words. The five activities are flashcards, picture matching, letter building, picture spelling, and listening/dictation. Student → **Vocabulary** lists assigned worksheets, saved visits and words ready for review; the original saved reading-word list remains linked there. Checked responses are saved immediately; partial unsent typing is not saved.
+
+Speech uses the device's English text-to-speech voice, preferring a local US English voice, with normal/slow word reading and sentence reading. No microphone or student voice recording is used. Install an English voice on the device if playback is unavailable; listening can be skipped without receiving independent-spelling credit. Type answers or use supported iPad Scribble. Spelling checks ignore case and surrounding spaces, not spelling errors; spellcheck/autocorrect are disabled in practice inputs.
+
+Activities rotate across words. Feedback follows look–say–cover–try; independent spelling, rather than flashcard exposure, drives review. Suggested successful review gaps are 1, 3, 7, 14 and 30 days, with earlier review after errors/hints and no same-day stage farming. These are practical scheduling defaults, not a validated mastery guarantee or a substitute for explicit phonics instruction. Choose concrete words for picture tasks; support abstract/sight words with context and parent-guided sound–spelling instruction. Sources: [IES foundational reading](https://ies.ed.gov/ncee/WWC/PracticeGuide/21), [IES study/learning practice](https://ies.ed.gov/ncee/wwc/PracticeGuide/1). Archived word/worksheet records and immutable practice snapshots preserve prior work; editing a spelling with learning history requires adding a new word.
+
+Vocabulary photo import: Parent → Vocabulary Studio → Import words → Take photo / Upload photo. The rear-camera file picker works on iPad over the trusted LAN without a live-camera HTTPS dependency. Choose Read words from photo to send the image to the configured OpenAI extraction model; check, edit, remove or add entries, then Use these words → Save words. Up to 30 single English words per photo, 20 MB, with automatic picture preparation available after saving. Results are cached per import request to avoid duplicate AI calls on network retries. Original photos are processed in memory, not published or retained. JPEG, PNG and WebP are supported; HEIC depends on the server decoder and reports a conversion error when unavailable. Each extraction attempt reserves $0.05 against the shared monthly AI allowance (a budget allowance, not a quoted API price).
+
+### Storage on this Mac
+
+Database and uploads now use host bind mounts, rather than Docker-managed volumes:
+- `/Users/tonyle/Projects/EasyLearn/data/postgres` → `/var/lib/postgresql/data` (PostgreSQL 16 data files)
+- `/Users/tonyle/Projects/EasyLearn/data/uploads` → `/app/data/uploads` (all private uploads, resource files and vocabulary images)
+
+The Compose sources are project-relative (`./data/postgres`, `./data/uploads`) and resolve to the absolute paths above on this Mac. Both directories must already exist; Compose fails instead of silently creating a missing host directory. For a fresh installation only, create them with `mkdir -p data/postgres data/uploads` before first startup. Do not initialize an empty folder when recovering an existing installation.
+
+The migration snapshot is `/Users/tonyle/Projects/EasyLearn/backups/20261023T025521Z`. Original named volumes `easylearn_lumilearn_db` / `easylearn_lumilearn_uploads` were retained as pre-migration rollback copies, and are no longer live storage. Do not treat those old copies as current backups.
+
+Run `bash scripts/backup.sh /Users/tonyle/Projects/EasyLearn/backups` for a portable database dump plus upload archive. The script validates dump/archive listings, writes SHA-256 checksums and marks complete backups with `COMPLETE`. For a DB/uploads snapshot with no intervening app writes, stop the app first (`docker compose stop app`), run the backup, then `npm run docker:start`. A failed backup has no `COMPLETE` marker. Backups and data directories are excluded from Git. Do not edit raw PostgreSQL files or copy the live database folder as a backup; use the dump script. Host storage survives Docker container/volume removal, but a Mac disk failure still requires a copy on another disk or backup service. No daily schedule was installed because both host mounts work.

@@ -1,0 +1,5 @@
+export type GameWallet={points:number;seconds:number;enabled:boolean;reward_points:number;seconds_per_point:number;daily_limit_minutes:number;used_today:number;active:{id:string;expires_at:string}|null};
+export type FlyLeader={id:string;nickname:string;score:number};
+export function gameKey(){const bytes=crypto.getRandomValues(new Uint8Array(16));bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;const h=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;}
+export async function gameApi(path:string,body?:unknown){const r=await fetch(path,{method:body?'POST':'GET',headers:body?{'content-type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined,cache:'no-store'});const j=await r.json();if(!r.ok)throw Error(j.error?.message||'Could not connect. Try again.');return j.data;}
+export function gameTime(n:number){return `${Math.floor(Math.max(0,n)/60)}:${String(Math.max(0,Math.floor(n))%60).padStart(2,'0')}`;}

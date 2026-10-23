@@ -85,8 +85,9 @@ export async function POST(request: Request, params: Params) {
       const reserve = needsAi && aiReady ? .25 : 0;
       if (reserve) {
         await tx`SELECT pg_advisory_xact_lock(163021, 2)`;
+        await tx`SELECT pg_advisory_xact_lock(hashtext('shared-ai-budget'))`;
         const budget = Number(process.env.AI_MONTHLY_BUDGET_USD || "10");
-        const [usage] = await tx`SELECT coalesce(sum(reserved_cost_usd),0)::float8 amount FROM paper_runs WHERE created_at>=date_trunc('month',now())`;
+        const [usage] = await tx`SELECT ((SELECT coalesce(sum(reserved_cost_usd),0) FROM paper_runs WHERE created_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM upload_extractions WHERE updated_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM worksheet_generation_items WHERE updated_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM vocab_images WHERE updated_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM vocab_photo_imports WHERE updated_at>=date_trunc('month',now())))::float8 amount`;
         if (!Number.isFinite(budget) || Number(usage.amount) + reserve > budget) throw new Error("BUDGET_LIMIT");
       }
       const clock=await changeClock(tx,c.studentId,c.assignmentId,"finish");

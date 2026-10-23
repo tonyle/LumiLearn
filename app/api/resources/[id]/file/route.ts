@@ -1,0 +1,10 @@
+import {stat} from 'node:fs/promises';import {createReadStream} from 'node:fs';import {Readable} from 'node:stream';import {resourcePath} from '@/lib/resource-files';import {resourceSession,accessibleResource,resourceError,ResourceError} from '@/lib/resource-store';import {resourceRange} from '@/lib/resource-contract';
+export const runtime='nodejs';
+async function serve(request:Request,{params}:{params:Promise<{id:string}>},head=false){try{
+ const session=await resourceSession(),resource=await accessibleResource((await params).id,session),query=new URL(request.url).searchParams,original=query.get('original')==='1',key=original?resource.storage_key:resource.preview_key??resource.storage_key;
+ if(!key)throw new ResourceError('NOT_FOUND','This resource has no uploaded file.',404);const file=resourcePath(key),info=await stat(file),mime=!original&&resource.preview_key?'application/pdf':resource.mime_type||'application/octet-stream';
+ let range;try{range=resourceRange(request.headers.get('range'),info.size);}catch{return new Response(null,{status:416,headers:{'Content-Range':`bytes */${info.size}`,'Cache-Control':'private, no-store'}});}
+ const headers:Record<string,string>={'Content-Type':mime,'Content-Length':String(range?range.end-range.start+1:info.size),'Accept-Ranges':'bytes','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'SAMEORIGIN','Content-Security-Policy':"frame-ancestors 'self'",'Content-Disposition':`${original?'attachment':'inline'}; filename="${original?resource.original_filename||'resource':`resource.${key.split('.').pop()}`}"`};if(range)headers['Content-Range']=`bytes ${range.start}-${range.end}/${info.size}`;
+ return new Response(head?null:Readable.toWeb(createReadStream(file,range??{})) as ReadableStream<Uint8Array>,{status:range?206:200,headers});
+ }catch(error){return resourceError(error);}}
+export const GET=serve;export async function HEAD(request:Request,context:{params:Promise<{id:string}>}){return serve(request,context,true);}

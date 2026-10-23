@@ -1,0 +1,5 @@
+import Link from 'next/link';
+import {Calculator,FlaskConical,BookOpen,PenLine,Globe} from 'lucide-react';
+import {STUDENT_SUBJECTS,type StudentSubject} from '@/lib/student-subjects';
+const icons={math:Calculator,science:FlaskConical,reading:BookOpen,writing:PenLine,social_studies:Globe};
+export function StudentSubjectTabs({selected,basePath,date,counts,status}:{selected:StudentSubject;basePath:string;date?:string;counts?:Record<string,number>;status?:string}){return <nav className="student-subject-tabs" aria-label="Subjects">{STUDENT_SUBJECTS.map(subject=>{const Icon=icons[subject.code];const query=new URLSearchParams({subject:subject.code,...(date?{date}:{}),...(status?{status}:{})});return <Link key={subject.code} className={`student-subject-tab ${selected===subject.code?'selected':''}`} aria-current={selected===subject.code?'page':undefined} href={`${basePath}?${query}`} scroll={false}><Icon size={19}/><span>{subject.label}</span>{counts&&<> <span className="subject-tab-count">{counts[subject.code]??0}</span></>}</Link>;})}</nav>;}

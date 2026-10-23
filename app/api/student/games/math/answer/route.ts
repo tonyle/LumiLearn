@@ -1,0 +1,2 @@
+import {gameSession} from '@/lib/games';import {answerMeadow,meadowAnswerSchema} from '@/lib/math-meadow-store';import {ok,bodyJson} from '@/lib/http';import {resourceError} from '@/lib/resource-store';
+export async function POST(r:Request){try{const s=await gameSession(r);return ok(await answerMeadow(s.studentId!,meadowAnswerSchema.parse(await bodyJson(r,2000))));}catch(e){return resourceError(e);}}

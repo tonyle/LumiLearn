@@ -1,0 +1,28 @@
+import postgres from 'postgres';import {hash} from '@node-rs/argon2';import {randomUUID,createHash} from 'node:crypto';import {writeFile,readFile} from 'node:fs/promises';import assert from 'node:assert/strict';
+const db=postgres(process.env.DATABASE_URL,{max:1}),fixturePath='/tmp/worksheet-focus-qa.json';let fixture={studentId:null,assignmentId:null,tokens:[]};
+async function cleanup(){if(fixture.assignmentId)await db`DELETE FROM assignments WHERE id=${fixture.assignmentId}`;if(fixture.studentId)await db`DELETE FROM students WHERE id=${fixture.studentId}`;for(const hash of fixture.tokens)await db`DELETE FROM sessions WHERE token_hash=${hash}`;}
+if(process.env.CLEAN_FOCUS_QA==='1'){fixture=JSON.parse(await readFile(fixturePath,'utf8'));await cleanup();await db.end();console.log('Removed exact focus-mode QA fixtures.');process.exit(0);}
+async function session(role,id){const token=randomUUID(),hashed=createHash('sha256').update(token).digest('hex');fixture.tokens.push(hashed);await db`INSERT INTO sessions(role,parent_id,student_id,token_hash,expires_at) VALUES(${role},${role==='parent'?id:null},${role==='student'?id:null},${hashed},now()+interval '15 minutes')`;return `lumi_session=${token}`;}
+async function request(path,cookie,body,method=body?'POST':'GET',origin='http://127.0.0.1:3000'){const r=await fetch(`http://127.0.0.1:3000${path}`,{method,headers:{cookie,origin,'content-type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});return {status:r.status,...await r.json()};}
+try{
+ const [parent]=await db`SELECT id FROM parents LIMIT 1`;const [student]=await db`INSERT INTO students(nickname,grade,login_name,pin_hash) VALUES('Focus mode QA','5','focus-mode-qa',${await hash('654321')}) RETURNING id`;fixture.studentId=student.id;
+ const [a]=await db`INSERT INTO assignments(title,state,created_by) VALUES('Decimal practice · Focus session','draft',${parent.id}) RETURNING id`;fixture.assignmentId=a.id;
+ const qs=await db`SELECT qv.id FROM question_versions qv JOIN questions q ON q.id=qv.question_id WHERE q.subject_code='math' AND qv.answer_key->>'kind'='number' LIMIT 10`;assert.equal(qs.length,10);for(let i=0;i<10;i++)await db`INSERT INTO assignment_questions(assignment_id,question_version_id,sort_order) VALUES(${a.id},${qs[i].id},${i})`;
+ await db`INSERT INTO assignment_students(assignment_id,student_id) VALUES(${a.id},${student.id})`;await db`UPDATE assignments SET state='assigned' WHERE id=${a.id}`;
+ const auth=await session('student',student.id),parentAuth=await session('parent',parent.id);const [other]=await db`SELECT id FROM students WHERE id<>${student.id} LIMIT 1`;const otherAuth=await session('student',other.id);
+ const base=`/api/student/assignments/${a.id}`;assert.equal((await request(base+'/timer',auth,{action:'start'})).status,200);
+ const stroke={tool:'pen',points:[{x:.2,y:.3,p:.5}]},draft={[qs[0].id]:{text:'Exit saves this response.',strokes:[stroke]}};
+ const initial=await request(base+'/pages/0',auth,{baseRevision:0,draft},'PUT');assert.equal(initial.status,200);
+ await db`UPDATE study_clocks SET running_since=now()-interval '5 seconds',lease_until=now()+interval '45 seconds' WHERE assignment_id=${a.id} AND student_id=${student.id}`;
+ await request(base+'/timer',auth,{action:'pause'});draft[qs[0].id].strokes.push({...stroke,points:[{x:.4,y:.5,p:.5}]});
+ const body={pageIndex:0,baseRevision:initial.data.revision,draft};
+ assert.equal((await request(base+'/exit',parentAuth,body)).status,403);assert.equal((await request(base+'/exit',otherAuth,body)).status,403);assert.equal((await request(base+'/exit',auth,body,'POST','https://evil.example')).status,403);
+ const saved=await request(base+'/exit',auth,body);assert.equal(saved.status,200,JSON.stringify(saved));assert.equal(saved.data.clock.state,'paused');assert.ok(saved.data.clock.elapsedMs>=4900);assert.equal(saved.data.revision,2);
+ const again=await request(base+'/exit',auth,body);assert.equal(again.status,200);assert.equal(again.data.revision,2);assert.equal(again.data.clock.elapsedMs,saved.data.clock.elapsedMs);
+ const reopened=await request(base+'/pages/0',auth);assert.deepEqual(reopened.data.draft,draft);assert.equal(reopened.data.clock.state,'paused');assert.equal((await request(base+'/timer',auth,{action:'start'})).data.state,'paused');
+ const stale=await request(base+'/exit',auth,{...body,baseRevision:0,draft:{[qs[0].id]:{text:'Stale overwrite',strokes:[]}}});assert.equal(stale.status,409);assert.deepEqual((await request(base+'/pages/0',auth)).data.draft,draft);
+ await request(base+'/timer',auth,{action:'resume'});await db`UPDATE study_clocks SET running_since=now()-interval '2 seconds',lease_until=now()+interval '45 seconds' WHERE assignment_id=${a.id} AND student_id=${student.id}`;
+ const exitedAgain=await request(base+'/exit',auth,{...body,baseRevision:2});assert.equal(exitedAgain.status,200);assert.ok(exitedAgain.data.clock.elapsedMs>=saved.data.clock.elapsedMs+1900);assert.equal(exitedAgain.data.clock.state,'paused');
+ const html=await (await fetch(`http://127.0.0.1:3000/s/${student.id}/assignment/${a.id}`,{headers:{cookie:auth}})).text();assert.ok(html.includes('data-focus-mode="worksheet"'));assert.ok(!html.includes('<header class="student-head"'));assert.ok(!html.includes('<footer class="student-footer"'));
+ console.log(JSON.stringify({passed:true,studentId:student.id,assignmentId:a.id,checks:'Focus shell removes surrounding chrome; latest ink/text saved while paused; time frozen on exit and preserved across reopen/resume; idempotent exit and stale-write/role/origin protection.'}));
+}finally{if(process.env.KEEP_FOCUS_QA==='1')await writeFile(fixturePath,JSON.stringify(fixture));else await cleanup();await db.end();}

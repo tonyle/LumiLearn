@@ -24,6 +24,7 @@ export function UploadPanel(){
       setSuccess(true);setFile(null);
       setMessage("Worksheet uploaded and stored privately.");
       router.refresh();
+      if(json.data?.id)router.push(`/parent/upload/${json.data.id}`);
     }catch{setMessage("Could not upload. Check your connection and try again.");}
     finally{uploading.current=false;setBusy(false);}
   }

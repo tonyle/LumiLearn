@@ -6,7 +6,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-lumilearn}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: ${POSTGRES_DB:-lumilearn}
-    volumes: ["lumilearn_db:/var/lib/postgresql/data"]
+    volumes:
+      - type: bind
+        source: ./data/postgres
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: false
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
@@ -17,13 +22,37 @@ services:
     build: .
     env_file: .env
     environment:
+      DOCUMENT_CONVERTER_URL: http://documents:8080
       IPAD_APP_URL: ${IPAD_APP_URL:-}
       DATABASE_URL: postgresql://${POSTGRES_USER:-lumilearn}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-lumilearn}
+    networks: [default, documents]
     ports: ["3000:3000"]
-    volumes: ["lumilearn_uploads:/app/data/uploads"]
+    volumes:
+      - type: bind
+        source: ./data/uploads
+        target: /app/data/uploads
+        bind:
+          create_host_path: false
     depends_on:
       db: { condition: service_healthy }
+      documents: { condition: service_started }
     restart: unless-stopped
+  documents:
+    build: ./docker/documents
+    networks: [documents]
+    read_only: true
+    tmpfs: ["/tmp:rw,nosuid,noexec,size=512m,mode=1777"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 768m
+    cpus: 1
+    pids_limit: 128
+    restart: unless-stopped
+networks:
+  default:
+  documents:
+    internal: true
+
 volumes:
   lumilearn_db:
   lumilearn_uploads:

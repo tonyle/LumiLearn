@@ -1,0 +1,4 @@
+import {it,expect} from 'vitest';import {newDash,stepDash,replayDash,dashDifficulty,spikeWidth} from '@/lib/dash';
+it('has visible obstacles immediately and ends a run on a spike',()=>{const s=newDash(42);expect(s.pipes[0].x).toBeLessThan(420);expect(replayDash(42,300,[]).dead).toBe(true);});
+it('allows one jump from the floor and ignores extra jumps in the air',()=>{const a=newDash(42),b=newDash(42);stepDash(a,true);stepDash(b,true);stepDash(a,true);stepDash(b,false);expect(a).toEqual(b);});
+it('replays successful jumps identically and caps difficulty',()=>{const s=newDash(42),jumps:number[]=[];for(let i=0;i<1000&&!s.dead;i++){const p=s.pipes.find(p=>p.x+spikeWidth(p.y)>84);const jump=!!p&&p.x<160&&s.y>=484;if(jump)jumps.push(s.tick);stepDash(s,jump);}expect(s.score).toBeGreaterThan(2);expect(replayDash(42,s.tick,jumps)).toEqual(s);expect(dashDifficulty(10000).speed).toBe(260);});

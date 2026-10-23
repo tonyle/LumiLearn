@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import {createElement} from 'react';import {cleanup,fireEvent,render,screen,waitFor} from '@testing-library/react';import {afterEach,it,expect,vi} from 'vitest';import {PaperPlayer} from '@/components/paper-player';
+vi.mock('next/navigation',()=>({useRouter:()=>({push:vi.fn()})}));
 vi.mock('next/link',()=>({default:'a'}));vi.mock('@/components/paper-ink',()=>({PaperInk:()=>createElement('div',null,'The worksheet questions')}));
 afterEach(()=>{cleanup();vi.unstubAllGlobals();});
 it('hides all questions behind a modal pause screen, freezes time, resumes and records the submitted duration',async()=>{

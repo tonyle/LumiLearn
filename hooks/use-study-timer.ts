@@ -7,7 +7,7 @@ export function useStudyTimer(assignmentId:string,enabled:boolean){
  const apply=useCallback((value:StudyClock)=>{latest.current=value;receivedAt.current=performance.now();setClock(value);},[]);
  const change=useCallback((action:'start'|'resume'|'pause'|'heartbeat')=>{
   const task=serial.current.catch(()=>{}).then(async()=>{
-   const response=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action})});const json=await response.json();
+   const response=await fetch(endpoint,{method:'POST',signal:AbortSignal.timeout(20000),headers:{'content-type':'application/json'},body:JSON.stringify({action})});const json=await response.json();
    if(!response.ok)throw Error(json.error?.message||'Could not sync the timer.');
    if(action==='resume')locallyPaused.current=false;
    if(!locallyPaused.current||json.data.state!=='running')apply(json.data);setError('');

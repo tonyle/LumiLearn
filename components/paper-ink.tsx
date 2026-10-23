@@ -5,7 +5,7 @@ import {attachInkSurface,type InkSurfaceOptions} from '@/lib/ink-surface';
 import {pageLayout,paperHeight,paperSvg,type InkStroke,type PaperDraft,type PaperQuestion,type PaperResult} from '@/lib/paper';
 const EMPTY_STROKES:InkStroke[]=[];
 type Cell=ReturnType<typeof pageLayout>[number];
-type Props={questions:PaperQuestion[];title:string;pageIndex:number;draft:PaperDraft;results:PaperResult[];tool:'pen'|'eraser'|'move';editable:(id:string)=>boolean;onChange:(id:string,stroke:InkStroke)=>void;onSelect:(id:string)=>void;onWritingChange?:(active:boolean)=>void;readDraft?:()=>PaperDraft};
+type Props={questions:PaperQuestion[];title:string;pageIndex:number;draft:PaperDraft;results:PaperResult[];tool:'pen'|'eraser'|'move';editable:(id:string)=>boolean;onChange:(id:string,stroke:InkStroke)=>void;onSelect:(id:string)=>void;onWritingChange?:(active:boolean)=>void;readDraft?:()=>PaperDraft;onFlushReady?:(flush:(()=>void)|null)=>void};
 const QuestionInk=memo(function QuestionInk({cell,height,strokes,tool,editable,onChange,onSelect,onWritingChange,readDraft,penState}:{cell:Cell;height:number;strokes:InkStroke[];penState:React.RefObject<{lastPenAt:number}>}&Pick<Props,'tool'|'editable'|'onChange'|'onSelect'|'onWritingChange'|'readDraft'>){
  const canvas=useRef<HTMLCanvasElement>(null),surface=useRef<ReturnType<typeof attachInkSurface>|null>(null),options=useRef<(InkSurfaceOptions&{readDraft?:()=>PaperDraft})|null>(null);
  useLayoutEffect(()=>{
@@ -28,10 +28,11 @@ const QuestionInk=memo(function QuestionInk({cell,height,strokes,tool,editable,o
  },[cell]);
  return <canvas ref={canvas} width={cell.width} height={cell.height} className="paper-ink-cell" aria-label={`Question ${cell.number} writing surface`} style={{left:`${cell.x/10}%`,top:`${cell.y/height*100}%`,width:'45%',height:`${cell.height/height*100}%`,touchAction:tool==='move'?'pan-x pan-y pinch-zoom':'none',cursor:tool==='move'?'grab':'crosshair'}}/>;
 });
-export const PaperInk=memo(function PaperInk({questions,title,pageIndex,draft,results,tool,editable,onChange,onSelect,onWritingChange,readDraft}:Props){
+export const PaperInk=memo(function PaperInk({questions,title,pageIndex,draft,results,tool,editable,onChange,onSelect,onWritingChange,readDraft,onFlushReady}:Props){
  const layout=useMemo(()=>pageLayout(questions,pageIndex*10+1),[questions,pageIndex]);
  const height=useMemo(()=>paperHeight(questions,pageIndex*10+1),[questions,pageIndex]);
- const penState=useRef({lastPenAt:-Infinity});
+ const penState=useRef<InkSurfaceOptions['penState']>({lastPenAt:-Infinity});
+ useLayoutEffect(()=>{onFlushReady?.(()=>penState.current.active?.end(true));return()=>onFlushReady?.(null);},[onFlushReady]);
  const readLive=useMemo(()=>readDraft??(()=>draft),[readDraft,draft]);
  const background=useMemo(()=>`data:image/svg+xml;charset=utf-8,${encodeURIComponent(paperSvg(questions,title,pageIndex,{},false))}`,[questions,title,pageIndex]);
  return <div className="paper-sheet" style={{aspectRatio:`1000 / ${height}`}}>

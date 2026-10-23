@@ -65,3 +65,66 @@ Validation on the deployed Node 22 Docker application:
 - Browser smoke: student Print page / Print all links visible; Letter preview shows Print Letter, Download PDF, Open PDF, and expected blank sheets. Saved UI proof screenshot to /private/tmp/letter-print-preview.png.
 - Existing printer inventory: HP ENVY 6400 IPPS queue, duplicate DNS-SD queue for the same UUID, and an old IPP queue. HP queue advertises Letter.
 - Submitted one physical job using `lp`, Letter, one-sided, grayscale, actual size: HP_ENVY_6400_series__C7EFF9_-170. CUPS accepted it but reports Unable to locate printer HP508140C7EFF9.local. No physical printing success claimed. No duplicate job was submitted. Bonjour and hostname checks found no reachable HP service; old 192.168.1.11 IPP connection also failed. Awaiting user's power/Wi-Fi check/current printer IP.
+
+## Learning resources and Games — 2026-10-22
+
+- Production Docker build, ESLint and TypeScript checks passed.
+- 122 tests passed across 33 test files, including existing handwriting/save, worksheet focus, history and grading regressions.
+- Resource integration passed: genuine PDF/Word/PPT previews, video byte ranges, private assignments, revision conflicts, archive/restore, per-student questions, parent replies, and same-origin protection. Parent UI reply updated the unanswered navigation badge.
+- Games integration passed: all-correct rewards issued once, missing-answer ineligibility, concurrent idempotent exchanges, balance checks, one active server-timed run, cross-student denial, invalid fast-forward replay denial, positive replay-computed leaderboard score, duplicate-finish refund protection, parent adjustments/disable, daily cap and expiry.
+- Browser verified student sign-in, Games navigation, point exchange, live canvas rendering/timer, flight result, accessible focus dialog and parent reward controls. Physical iPad touch/audio performance still requires device testing.
+- Disposable QA accounts, worksheets, resource files, discussion threads and game runs were removed. Existing learner work and credentials were preserved.
+- Screenshots: `output/ui/student-games.png`, `output/ui/flappy-flight.png`, `output/ui/parent-game-rewards.png`.
+
+## Geometry Dash — 2026-10-22
+
+- Added original neon cube/spike gameplay, grounded jumps, deterministic server replay and a capped speed curve.
+- Both games share points, purchased seconds, daily limits and the one-active-session restriction. Scores are stored under the server-side game code with separate Top Fly / Top Dash boards.
+- 129 tests passed across 35 files. New tests cover initial obstacles, spike collisions, ignored air jumps, reproducible scoring and launching Dash from the existing wallet.
+- API integration verified positive Dash replay scores, leaderboard separation and rejecting Flappy starts while Dash is active, alongside the existing points, timer, expiry and authorization checks.
+- Browser verified the Geometry Dash launch, neon cube/spikes, running timer and result controls. Shared timeout-save-and-return behavior remains covered by UI and API regression tests.
+
+## Math Meadow Run — 2026-10-22
+
+- Added hand-built SVG garden scenery, animated runner/wall jumps, touch number pad, optional synthesized sounds and two arithmetic trails.
+- Checked 3,000 addition/subtraction problems and 3,000 times-table problems: 0–20 operands/results, no negative subtraction, factors 1–9, and exact division only.
+- Full regression run: 134 passed across 37 files. An additional timeout-save-and-return test was then added; all 3 Math Meadow UI tests passed (135 distinct tests total).
+- ESLint, TypeScript and production Docker build passed.
+- API integration verified server-generated questions, correct/incorrect answers, retry idempotency, stale-index rejection, cross-student access denial, one shared active game, preserved score after expiry, separate trail boards and no learning-point farming.
+- Browser verified keypad answers, incorrect-answer hints, correct-answer jump state/score, next question, timer and save-and-exit. Preview: output/ui/math-meadow-run.png.
+- Disposable QA accounts, answer rows, game runs and worksheet fixtures were removed; real learner credentials/work were preserved.
+
+## Grade 1 Vocabulary Studio — 2026-10-22
+
+- Parent word library supports manual creation/editing, CSV/TXT/JSON imports, automatic illustrations, picture review, worksheet composition, activity selection and learner assignment. Starter CSV and instant illustrations are included.
+- Student Vocabulary supports flashcards with meaning/context/chunks, image matching, letter building, picture spelling and listening/dictation. Device English TTS supports normal/slow playback and sentences; no microphone capture is used.
+- Typed spelling, rather than flashcard taps, drives spaced review. Errors/hints trigger earlier review; same-day repeat sessions cannot farm review stages. Activities interleave across words.
+- 146 unit tests passed across 40 files. ESLint, TypeScript and production Docker build passed.
+- Integration verified private generated pictures, approval before assignment, assigned-only access, all five activities, spelling corrections, idempotent responses, saved sessions, independent learner progress, optimistic updates and no same-day stage farming.
+- Additional live check generated a genuine OpenAI vocabulary illustration with the configured project/model. Picture access from an immutable practice snapshot remained valid after worksheet word membership changed.
+- Browser verified manual word creation with automatic picture generation, picture approval, custom worksheet editing/assignment, learner Vocabulary navigation, focused flashcard layout, reveal/audio controls and saved checked response.
+- Screenshots: output/ui/parent-vocabulary-studio.png and output/ui/student-vocabulary-flashcard.png.
+- Disposable QA accounts, words, lessons, image files and practice records were removed after verification. Real learner work and credentials were preserved. Physical iPad voice packs/Scribble availability still depend on device configuration.
+
+## Vocabulary photo import — 2026-10-22
+- Added iPad rear-camera capture and photo upload, local preview, explicit AI read action, editable/removable extracted words, and transfer into the existing reviewed word-save / picture-generation flow.
+- Database migration 0014 applied; production Docker build and health checks passed. LAN address preserved.
+- Lint and TypeScript passed. Existing full suite plus extraction tests: 149 passing; additional camera/review UI test passed (150 total tested cases).
+- Live integration `tests/integration/vocabulary-photo.mjs` passed against OpenAI using a synthetic image containing cat/dog/sun: exact extraction, origin/auth rejection, no words created before review, repeated request cached with one budget reservation, and reviewed words created successfully. Disposable parent/words/results cleaned afterward.
+- Original photos are processed in memory. HEIC availability depends on Sharp's decoder; unsupported photos return a clear camera/JPEG fallback message. Physical iPad camera hardware was not available for testing.
+
+## Three-point worksheet rewards — 2026-10-22
+- Migration 0015 sets both existing and future learner rules to 3 points per perfect worksheet and 60 seconds per point. Existing point/time balances and reward ledger stay intact.
+- Parent and student copy now identifies perfect worksheets (100/100). Parent controls remain available for later rule changes.
+- Updated game integration to check 9/10 correct earns zero; 10/10 earns exactly 3 once; exchanging 3 points gives 180 seconds; concurrent retries do not double-spend or duplicate rewards.
+
+## Tiered worksheet rewards
+- Reward tiers replace perfect-only eligibility: 100% → 3 points, 80–<100% → 2, 70–<80% → 1, below 70% → 0. Every expected question must have a final grade; pending/incomplete grading does not earn rewards.
+- Reward synchronization now handles graded incorrect answers even while a worksheet remains available for corrections. Rechecking is idempotent; improved scores add only the difference to the highest tier already awarded, maximum 3 new-rule points per worksheet. Previously awarded balances are preserved.
+- Parent rule fields show the fixed 3-point maximum and 60-second exchange rate; API enforces those values. Student/parent copy explains all tiers.
+- Tier boundary unit tests and GameHub tests passed (4 tests). Updated live game integration passed for 60/70/80/90/100, incremental upgrades, idempotency and 3-point→180-second exchange. Lint, typecheck and production build passed. Docker storage exhaustion during rollout was resolved by removing obsolete EasyLearn images and unused build cache, then restarting healthy services; no data volumes removed.
+
+## Host storage migration — 2026-10-22
+- Stopped app writes, created/validated portable DB dump and uploads archive on Mac, recorded all public-table counts, cleanly stopped PostgreSQL, copied existing cluster to host bind directory, restored upload files, and switched Compose to explicit bind mounts with missing-directory creation disabled.
+- Both app and DB restarted healthy. Verified all table row counts before/after, all 31 uploaded-file SHA-256 hashes, and upload directory read/write access. Original named volumes retained untouched as rollback copies.
+- Hardened backup script for absolute destinations and container-configured database credentials, restrictive file permissions, dump/archive validation, checksums and completion marker. No automatic daily job needed for the user's conditional fallback because host mounts succeeded.

@@ -1,0 +1,2 @@
+import {z} from 'zod';import {notFound} from 'next/navigation';import {parentPage} from '@/lib/parent-page';import {submittedPaper} from '@/lib/paper-history';import {SubmittedPaperView} from '@/components/submitted-paper-view';
+export default async function HistorySubmission({params}:{params:Promise<{runId:string}>}){await parentPage();const {runId}=await params;if(!z.string().uuid().safeParse(runId).success)notFound();const paper=await submittedPaper(runId);if(!paper)notFound();return <SubmittedPaperView paper={paper} parent/>;}

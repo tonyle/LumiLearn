@@ -5,6 +5,7 @@ import {afterEach,describe,expect,it,vi} from "vitest";
 import {PaperPlayer} from "@/components/paper-player";
 import type {PaperQuestion} from "@/lib/paper";
 const inkRenderCount=vi.hoisted(()=>({value:0}));
+vi.mock('next/navigation',()=>({useRouter:()=>({push:vi.fn()})}));
 vi.mock("@/hooks/use-study-timer",()=>({useStudyTimer:()=>({clock:{state:"running",elapsedMs:0,started:true,serverNow:Date.now(),leaseUntil:Date.now()+45000},loading:false,error:"",pause:vi.fn(),resume:vi.fn().mockResolvedValue(undefined),apply:vi.fn()})}));
 vi.mock("next/link",()=>({default:"a"}));
 vi.mock("@/components/paper-ink",()=>({PaperInk:({questions,onChange,onWritingChange}:{questions:PaperQuestion[];onChange:(id:string,stroke:unknown)=>void;onWritingChange?:(active:boolean)=>void})=>{inkRenderCount.value++;return createElement("button",{onPointerDown:()=>onWritingChange?.(true),onPointerUp:()=>onWritingChange?.(false),onClick:()=>onChange(questions[0].id,{tool:"pen",points:[{x:.2,y:.3,p:.5}]})},`Draw on ${questions.length}-question paper`);}}));
