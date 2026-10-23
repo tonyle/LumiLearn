@@ -1,0 +1,2 @@
+import {z} from 'zod';import {gameSession} from '@/lib/games';import {readMeadowRace} from '@/lib/math-meadow-store';import {ok,bodyJson} from '@/lib/http';import {resourceError} from '@/lib/resource-store';
+export async function POST(r:Request){try{const s=await gameSession(r);const b=z.object({runId:z.string().uuid()}).strict().parse(await bodyJson(r,1000));return ok(await readMeadowRace(s.studentId!,b.runId));}catch(e){return resourceError(e);}}

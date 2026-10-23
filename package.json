@@ -20,7 +20,9 @@
     "db:seed": "tsx scripts/seed.ts && tsx scripts/seed-coppell.ts",
     "db:seed:practice": "tsx scripts/seed-coppell.ts",
     "validate:questions": "tsx scripts/validate-questions.ts",
-    "db:upgrade:lessons": "tsx scripts/upgrade-lessons.ts"
+    "db:upgrade:lessons": "tsx scripts/upgrade-lessons.ts",
+    "assets:pokemon": "node scripts/download-pokemon-assets.mjs",
+    "prebuild": "npm run assets:pokemon"
   },
   "dependencies": {
     "@node-rs/argon2": "2.0.2",

@@ -1,0 +1,37 @@
+[
+  {
+    "id": 25,
+    "name": "Pikachu",
+    "file": "25.webp",
+    "sha256": "57b73f39ebfabb93482c7446735a9826af73eb1de4bbd8e164baae3af5745273",
+    "source": "https://github.com/PokeAPI/sprites/blob/master/sprites/pokemon/other/official-artwork/25.png"
+  },
+  {
+    "id": 6,
+    "name": "Charizard",
+    "file": "6.webp",
+    "sha256": "ae6389db36100ac2e7998962482cfdbc5728f9ccad4624b4ca1f4e46ec5ce715",
+    "source": "https://github.com/PokeAPI/sprites/blob/master/sprites/pokemon/other/official-artwork/6.png"
+  },
+  {
+    "id": 9,
+    "name": "Blastoise",
+    "file": "9.webp",
+    "sha256": "4709da385f6020e48ffd9106b20b8a71e6c655de322c65da56dc5868125c676b",
+    "source": "https://github.com/PokeAPI/sprites/blob/master/sprites/pokemon/other/official-artwork/9.png"
+  },
+  {
+    "id": 3,
+    "name": "Venusaur",
+    "file": "3.webp",
+    "sha256": "51d3a7c523f9d33c21d10737cf5d62947b0274f15490a88f7896131c6c82f69f",
+    "source": "https://github.com/PokeAPI/sprites/blob/master/sprites/pokemon/other/official-artwork/3.png"
+  },
+  {
+    "id": 448,
+    "name": "Lucario",
+    "file": "448.webp",
+    "sha256": "7b230ed59f405df22c3a60cd4c46bf9db537b21c52239632b186041f77dcbc03",
+    "source": "https://github.com/PokeAPI/sprites/blob/master/sprites/pokemon/other/official-artwork/448.png"
+  }
+]
