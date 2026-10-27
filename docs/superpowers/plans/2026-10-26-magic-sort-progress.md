@@ -1,0 +1,13 @@
+# Execution ledger — plan: docs/superpowers/plans/2026-10-26-magic-sort.md
+2026-10-26: User accepted 20 gently increasing levels after reviewing the educational game proposal.
+Pre-flight: use existing game wallet reservation/finish lock ordering; Magic Sort needs authoritative state rather than Flappy replay. Extract reserveFlight transaction helper; math modes and game navigation preserved.
+Engine and learning: implemented; missing-module tests observed failing before implementation; 160 generated puzzles verified against known solutions. Added range regression for beginner math and fact-group division.
+Persistence/API: migration0020 applied; wallet-first transaction ordering, idempotent actions, version conflicts, ownership, server grading and unlock progression. No learning reward ledger writes.
+Student and parent UI: implemented; 20-level map, companion, sound, bottle sorting, learning challenges, hints/undo/restart, exit/expiry flow; parent focus/settings/practice report.
+Verification: initial complete suite exposed ambiguous duplicate locked-play label; changed Magic card to “Magic time locked”; targeted13 tests green. Lint and typecheck green. Full suite/build/integration/browser verification in progress.
+No user credential, student work, reward balances or uploads modified for QA; disposable student fixtures only.
+Final review: one important spaced-review defect found. Added deployed integration assertion; observed failure (review_item null after immediate retry); preserved review until a subsequent unassisted correct occurrence. Integration now passes, including next-level question identity. No deferred findings.
+Final production image 06f5c699c4ec22f5eaeb518c0742f4bc64d60bcfb6aeeb796c9794ed7da8c1aa built and healthy; responsive Play footer visually verified. Disposable integration passes authentication/origin/isolation, wallet reservation rollback, idempotent/stale moves, wrong-answer help and spaced review, level20, resume/expiry/parent pause, exact refunds, parent report, starter word fallback, no rewards minted.
+Browser played level1 through wrong/correct retries to completion, continued to level2, saved/exited and reopened the persisted map; screenshots output/ui/magic-sort-map.png and magic-sort-learning.png.
+Docker verification initially hit ENOSPC after builds; removed only superseded LumiLearn images and unused build cache. Database/upload mounts untouched.
+Complete: final195/195 tests across51files, lint/typecheck/build/diff checks green; integration and browser verification passed. Preview learner and integration fixtures removed. Changes remain in the user's existing workspace, without commit/push.

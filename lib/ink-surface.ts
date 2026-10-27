@@ -54,6 +54,7 @@ export function attachInkSurface(canvas:HTMLCanvasElement,getOptions:()=>InkSurf
   release(previous.pointerId);redraw();const options=getOptions();if(options.penState.active?.owner===owner)delete options.penState.active;options.onWriting(false);
  }
  function down(event:PointerEvent){
+  if(event.pointerType==='touch'){if(event.cancelable)event.preventDefault();return;}
   let options=getOptions();if(options.tool==='move'||!options.editable||event.button>0)return;
   if(event.pointerType==='touch'&&(event.isPrimary===false&&Math.max(event.width||1,event.height||1)>40||performance.now()-options.penState.lastPenAt<800))return;
   const other=options.penState.active;
@@ -89,7 +90,7 @@ export function attachInkSurface(canvas:HTMLCanvasElement,getOptions:()=>InkSurf
   if(active?.pointerId===event.pointerId&&!canvas.hasPointerCapture?.(event.pointerId))finish();
  }
  function blur(){finish();}
- function blockGesture(event:Event){if(getOptions().tool!=='move'&&event.cancelable)event.preventDefault();}
+ function blockGesture(event:Event){if(event.cancelable)event.preventDefault();}
  const nonPassive={passive:false};
  canvas.addEventListener('pointerdown',down,nonPassive);canvas.addEventListener('pointermove',move,nonPassive);
  window.addEventListener('pointerup',up,nonPassive);window.addEventListener('pointercancel',cancel,nonPassive);

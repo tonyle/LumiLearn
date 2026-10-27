@@ -81,20 +81,42 @@ describe('low-latency worksheet ink',()=>{
   fireEvent.pointerDown(canvas,{clientX:x+20,clientY:y,pointerId:7,pointerType:'pen'});fireEvent.pointerUp(canvas,{clientX:x+30,clientY:y+10,pointerId:7});
   fireEvent.pointerUp(canvas,{clientX:x,clientY:y,pointerId:2,pointerType:'touch'});expect(onChange).toHaveBeenCalledTimes(1);expect(onChange.mock.calls[0][1].points[0].x).toBeCloseTo(60/cell.width);
  });
- it('accepts 100 touch-stylus letters with changing pointer IDs and no pause',()=>{
-  const {canvas,onChange}=setup();
+ it('ignores 100 finger contacts without creating any ink or writing callbacks',()=>{
+  const {canvas,onChange,onWritingChange,bounds}=setup();
   for(let i=0;i<100;i++){const pointerId=i+10;fireEvent.pointerDown(canvas,{clientX:x,clientY:y,pointerId,pointerType:'touch'});fireEvent.pointerUp(canvas,{clientX:x+8,clientY:y+10,pointerId,pointerType:'touch'});}
-  expect(onChange).toHaveBeenCalledTimes(100);for(const call of onChange.mock.calls)expect(call[1].points).toHaveLength(2);
+  expect(onChange).not.toHaveBeenCalled();expect(onWritingChange).not.toHaveBeenCalled();expect(bounds).not.toHaveBeenCalled();
  });
- it('accepts a new touch-stylus letter even when the previous touch-up was missed',()=>{
+ it('ignores overlapping finger gestures even when a touch-up is missed',()=>{
   const {canvas,onChange}=setup();fireEvent.pointerDown(canvas,{clientX:x,clientY:y,pointerId:10,pointerType:'touch'});fireEvent.pointerMove(canvas,{clientX:x+10,clientY:y+10,pointerId:10,pointerType:'touch'});
   fireEvent.pointerDown(canvas,{clientX:x+30,clientY:y,pointerId:11,pointerType:'touch',isPrimary:false});fireEvent.pointerUp(canvas,{clientX:x+40,clientY:y+10,pointerId:11,pointerType:'touch',isPrimary:false});
-  fireEvent.pointerUp(canvas,{pointerId:10,pointerType:'touch'});expect(onChange).toHaveBeenCalledTimes(2);
+  fireEvent.pointerUp(canvas,{pointerId:10,pointerType:'touch'});expect(onChange).not.toHaveBeenCalled();
  });
- it('cancels touch gestures while writing but permits native scrolling in Move mode',()=>{
+ it('blocks native touch gestures in both writing and Move mode',()=>{
   const {canvas,rerender,props}=setup();expect(fireEvent.touchStart(canvas,{cancelable:true})).toBe(false);expect(fireEvent.touchMove(canvas,{cancelable:true})).toBe(false);
-  rerender(createElement(PaperInk,{...props,tool:'move'}));expect(fireEvent.touchStart(canvas,{cancelable:true})).toBe(true);
+  rerender(createElement(PaperInk,{...props,tool:'move'}));expect(fireEvent.touchStart(canvas,{cancelable:true})).toBe(false);expect(canvas.style.touchAction).toBe('none');
   fireEvent.pointerDown(canvas,{clientX:x,clientY:y});expect(props.onChange).not.toHaveBeenCalled();
+ });
+
+ it('allows pen/mouse page dragging in Move mode but ignores fingers without drawing or saving',()=>{
+  const {canvas,rerender,props,onChange,onWritingChange}=setup();rerender(createElement(PaperInk,{...props,tool:'move'}));
+  const viewport=canvas.closest('.paper-sheet')!.parentElement!;viewport.style.overflow='auto';
+  vi.spyOn(viewport,'scrollWidth','get').mockReturnValue(900);vi.spyOn(viewport,'clientWidth','get').mockReturnValue(450);vi.spyOn(viewport,'scrollHeight','get').mockReturnValue(1000);vi.spyOn(viewport,'clientHeight','get').mockReturnValue(500);viewport.scrollLeft=150;viewport.scrollTop=100;
+  fireEvent.pointerDown(canvas,{pointerType:'touch',pointerId:2,clientX:100,clientY:100});fireEvent.pointerMove(canvas,{pointerType:'touch',pointerId:2,clientX:50,clientY:60});fireEvent.pointerUp(canvas,{pointerType:'touch',pointerId:2});
+  expect(viewport.scrollLeft).toBe(150);expect(viewport.scrollTop).toBe(100);
+  for(const pointerType of ['pen','mouse']){fireEvent.pointerDown(canvas,{pointerType,pointerId:7,clientX:100,clientY:100});fireEvent.pointerMove(canvas,{pointerType,pointerId:7,clientX:50,clientY:60});fireEvent.pointerUp(canvas,{pointerType,pointerId:7});}
+  expect(viewport.scrollLeft).toBe(250);expect(viewport.scrollTop).toBe(180);expect(onChange).not.toHaveBeenCalled();expect(onWritingChange).not.toHaveBeenCalled();
+ });
+ it('moves the document vertically when the zoom viewport has only horizontal overflow',()=>{
+  const {canvas,rerender,props,onChange}=setup();rerender(createElement(PaperInk,{...props,tool:'move'}));const viewport=canvas.closest('.paper-sheet')!.parentElement!;viewport.style.overflow='auto';
+  vi.spyOn(viewport,'scrollWidth','get').mockReturnValue(900);vi.spyOn(viewport,'clientWidth','get').mockReturnValue(450);vi.spyOn(viewport,'scrollHeight','get').mockReturnValue(500);vi.spyOn(viewport,'clientHeight','get').mockReturnValue(500);
+  const root=document.documentElement;vi.spyOn(root,'scrollHeight','get').mockReturnValue(2000);vi.spyOn(root,'clientHeight','get').mockReturnValue(600);root.scrollTop=100;
+  fireEvent.pointerDown(canvas,{pointerType:'pen',pointerId:7,clientX:100,clientY:100});fireEvent.pointerMove(canvas,{pointerType:'pen',pointerId:7,clientX:50,clientY:40});fireEvent.pointerUp(canvas,{pointerType:'pen',pointerId:7});
+  expect(viewport.scrollLeft).toBe(50);expect(viewport.scrollTop).toBe(0);expect(root.scrollTop).toBe(160);expect(onChange).not.toHaveBeenCalled();root.scrollTop=0;
+ });
+ it('ignores fingers in Eraser mode and lets a pen erase normally',()=>{
+  const {canvas,rerender,props,onChange}=setup();rerender(createElement(PaperInk,{...props,tool:'eraser'}));
+  fireEvent.pointerDown(canvas,{pointerType:'touch',pointerId:2,clientX:x,clientY:y});fireEvent.pointerMove(canvas,{pointerType:'touch',pointerId:2,clientX:x+10,clientY:y+10});fireEvent.pointerUp(canvas,{pointerType:'touch',pointerId:2});expect(onChange).not.toHaveBeenCalled();
+  fireEvent.pointerDown(canvas,{pointerType:'pen',pointerId:7,clientX:x,clientY:y});fireEvent.pointerUp(canvas,{pointerType:'pen',pointerId:7,clientX:x+10,clientY:y+10});expect(onChange).toHaveBeenCalledTimes(1);expect(onChange.mock.calls[0][1].tool).toBe('eraser');
  });
  it('uses a question-sized backing canvas and batches movement drawing once per frame',()=>{
   const {canvas,onChange}=setup();expect(canvas.width).toBe(450);expect(canvas.height).toBe(cell.height);context.stroke.mockClear();

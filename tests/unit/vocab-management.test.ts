@@ -1,0 +1,5 @@
+import {expect,it} from 'vitest';
+import {vocabListFilters} from '@/lib/vocab-management';
+import {wordSchema,lessonSchema} from '@/lib/vocab-contract';
+it('validates grade, real date ranges, search and pagination',()=>{const f=vocabListFilters(new URLSearchParams('grade=3&from=2026-10-01&to=2026-10-26&page=2&q=ship&sort=word'));expect(f).toMatchObject({grade:'3',from:'2026-10-01',to:'2026-10-26',page:2,q:'ship',sort:'word'});expect(()=>vocabListFilters(new URLSearchParams('from=2026-02-30'))).toThrow();expect(()=>vocabListFilters(new URLSearchParams('from=2026-10-26&to=2026-10-01'))).toThrow();expect(()=>vocabListFilters(new URLSearchParams('grade=99'))).toThrow();});
+it('supports unclassified legacy content and explicit grade labels',()=>{expect(wordSchema.parse({word:'cat'}).grade).toBeNull();expect(wordSchema.parse({word:'cat',grade:'1'}).grade).toBe('1');const l={title:'Words',description:'',wordIds:['00000000-0000-4000-8000-000000000001'],studentIds:[],modes:['picture']};expect(lessonSchema.parse(l).grade).toBeNull();expect(lessonSchema.parse({...l,grade:'5'}).grade).toBe('5');});

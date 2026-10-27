@@ -1,0 +1,9 @@
+'use client';
+import {useState} from 'react';
+import {useRouter} from 'next/navigation';
+import * as Dialog from '@radix-ui/react-dialog';
+export function ReopenWorksheet({assignmentId,studentId,nickname}:{assignmentId:string;studentId:string;nickname:string}){
+ const router=useRouter(),[open,setOpen]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState('');
+ async function reopen(){setBusy(true);setError('');try{const r=await fetch(`/api/parent/assignments/${assignmentId}/reopen`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({studentId})});const json=await r.json();if(!r.ok)throw Error(json.error?.message||'Could not reopen this worksheet.');setOpen(false);router.refresh();}catch(e){setError(e instanceof Error?e.message:'Please try again.');}finally{setBusy(false);}}
+ return <Dialog.Root open={open} onOpenChange={v=>{if(!busy){setOpen(v);setError('');}}}><Dialog.Trigger asChild><button className="ghost" aria-label={`Reopen for ${nickname}`}>Reopen</button></Dialog.Trigger><Dialog.Portal><Dialog.Overlay className="completion-overlay"/><Dialog.Content className="assign-dialog"><Dialog.Title>Reopen for {nickname}?</Dialog.Title><Dialog.Description>The worksheet returns to My learning with a fresh answer sheet and up to 2 new grading attempts. Previous scores, submitted pages and study time stay in History. Rewards already earned are kept; the same reward cannot be earned twice.</Dialog.Description>{error&&<p className="notice" role="alert">{error}</p>}<div className="row"><Dialog.Close className="button secondary" disabled={busy}>Cancel</Dialog.Close><button className="primary" disabled={busy} onClick={()=>void reopen()}>{busy?'Reopening…':'Reopen worksheet'}</button></div></Dialog.Content></Dialog.Portal></Dialog.Root>;
+}

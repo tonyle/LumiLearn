@@ -17,12 +17,14 @@ export function cleanDraft(draft: PaperDraft, previous: PaperDraft, results: Pri
   return merged;
 }
 export async function readPaper(studentId: string, assignmentId: string, pageIndex: number, count: number) {
+  const [progress] = await sql`SELECT s.status,greatest(0,(SELECT count(*) FROM paper_runs r JOIN paper_pages p ON p.id=r.page_id WHERE p.submission_id=s.id AND r.state='succeeded')-s.grading_attempt_offset)::int attempts FROM submissions s WHERE s.student_id=${studentId} AND s.assignment_id=${assignmentId}`;
+  const completion = {completed:progress?.status==='completed',gradingAttempts:Number(progress?.attempts??0)};
   const [page] = await sql`SELECT p.* FROM paper_pages p JOIN submissions s ON s.id=p.submission_id WHERE s.assignment_id=${assignmentId} AND s.student_id=${studentId} AND p.page_index=${pageIndex}`;
-  if (!page) return { revision: 0, draft: {}, feedback: null };
+  if (!page) return { ...completion, revision: 0, draft: {}, feedback: null };
   if (page.status === "processing") {
     const stale = await sql`UPDATE paper_runs SET state='failed',error_code='AI_TIMEOUT',completed_at=now() WHERE page_id=${page.id} AND state='processing' AND created_at<now()-interval '3 minutes' RETURNING id`;
     if (stale.length) { await sql`UPDATE paper_pages SET status='failed' WHERE id=${page.id} AND status='processing'`; page.status="failed"; }
   }
   const results = page.results as PrivatePaperResult[];
-  return { clock:await readClock(studentId,assignmentId),revision: page.revision as number, draft: page.draft as PaperDraft, feedback: page.status === "draft" && !results.length ? null : safePaperFeedback(page.status as string, results, count) };
+  return { ...completion, clock:await readClock(studentId,assignmentId),revision: page.revision as number, draft: page.draft as PaperDraft, feedback: page.status === "draft" && !results.length ? null : safePaperFeedback(page.status as string, results, count) };
 }

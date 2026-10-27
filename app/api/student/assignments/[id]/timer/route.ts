@@ -11,5 +11,5 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
   }
   return changeClock(tx,c.studentId,c.assignmentId,action);
  });return ok(clock);
- }catch(error){return error instanceof z.ZodError?fail('VALIDATION','Choose a valid timer action.',422):fail('FORBIDDEN','This timer is not available.',403);}
+ }catch(error){if(error instanceof Error&&error.message==='WORKSHEET_COMPLETED')return fail('WORKSHEET_COMPLETED','This worksheet is completed. Ask your parent to reopen it.',409);return error instanceof z.ZodError?fail('VALIDATION','Choose a valid timer action.',422):fail('FORBIDDEN','This timer is not available.',403);}
 }

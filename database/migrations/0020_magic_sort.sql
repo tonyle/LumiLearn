@@ -1,0 +1,11 @@
+BEGIN;
+ALTER TABLE game_runs DROP CONSTRAINT game_runs_game_code_check;
+ALTER TABLE game_runs ADD CONSTRAINT game_runs_game_code_check CHECK(game_code IN ('flappy','dash','math20','mathfacts','magic'));
+CREATE TABLE magic_sort_settings(student_id uuid PRIMARY KEY REFERENCES students(id) ON DELETE CASCADE,focus text NOT NULL DEFAULT 'mixed' CHECK(focus IN ('math','words','mixed')),math_track text NOT NULL DEFAULT 'add5' CHECK(math_track IN ('add5','add10','add20','tables2','tables5','tablesmix','decimals')),lesson_id uuid REFERENCES vocab_lessons(id) ON DELETE SET NULL,updated_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE magic_sort_progress(student_id uuid PRIMARY KEY REFERENCES students(id) ON DELETE CASCADE,unlocked integer NOT NULL DEFAULT 1 CHECK(unlocked BETWEEN 1 AND 20),companion text NOT NULL DEFAULT 'bear' CHECK(companion IN ('bear','bunny','dragon')),review_item jsonb,updated_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE magic_sort_levels(student_id uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,level integer NOT NULL CHECK(level BETWEEN 1 AND 20),state jsonb NOT NULL,private_context jsonb NOT NULL,stars integer NOT NULL DEFAULT 0 CHECK(stars BETWEEN 0 AND 3),completed_at timestamptz,updated_at timestamptz NOT NULL DEFAULT now(),PRIMARY KEY(student_id,level));
+CREATE TABLE game_magic_runs(run_id uuid PRIMARY KEY REFERENCES game_runs(id) ON DELETE CASCADE,level integer NOT NULL CHECK(level BETWEEN 1 AND 20));
+CREATE TABLE magic_sort_actions(run_id uuid NOT NULL REFERENCES game_runs(id) ON DELETE CASCADE,request_key uuid NOT NULL,payload_hash text NOT NULL,created_at timestamptz NOT NULL DEFAULT now(),PRIMARY KEY(run_id,request_key));
+CREATE TABLE magic_sort_practice(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),student_id uuid NOT NULL REFERENCES students(id) ON DELETE CASCADE,run_id uuid NOT NULL REFERENCES game_runs(id) ON DELETE CASCADE,level integer NOT NULL,kind text NOT NULL,prompt text NOT NULL,response text NOT NULL,correct boolean NOT NULL,assisted boolean NOT NULL DEFAULT false,created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX magic_practice_student ON magic_sort_practice(student_id,created_at DESC);
+COMMIT;

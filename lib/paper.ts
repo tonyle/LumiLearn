@@ -12,7 +12,7 @@ export type PaperDraft = z.infer<typeof paperDraftSchema>;
 export type PaperResult = { questionId: string; status: "correct" | "incorrect" | "needs_review"; points: number | null };
 export type PrivatePaperResult = PaperResult & { transcription?: string; reason?: string; confidence?: number };
 export type PaperFeedback = { status: string; results: PaperResult[]; earned: number; maximum: number; pending: number; runId?: string; message?: string };
-export type PaperState = { revision: number; draft: PaperDraft; feedback: PaperFeedback | null; clock?: import("./study-clock").StudyClock | null };
+export type PaperState = { completed?: boolean; gradingAttempts?: number; revision: number; draft: PaperDraft; feedback: PaperFeedback | null; clock?: import("./study-clock").StudyClock | null };
 export function safePaperFeedback(status: string, results: PrivatePaperResult[], count: number, runId?: string): PaperFeedback {
   return { status, results: results.map(({ questionId, status, points }) => ({ questionId, status, points })), earned: results.reduce((sum, r) => sum + (r.points ?? 0), 0), maximum: count * 10, pending: count - results.filter(r => r.points !== null).length, ...(runId ? { runId } : {}) };
 }

@@ -1,0 +1,3 @@
+import type {MagicBoard,MagicMove,magicLevel} from '@/lib/magic-sort';import type {publicMagicQuestion,MagicTrack} from '@/lib/magic-learning';
+export type MagicSummary={unlocked:number;companion:string;flowers:number;levels:{level:number;stars:number;completed:boolean;saved:boolean}[]};
+export type MagicView={runId:string;level:number;seed:number;version:number;board:MagicBoard;pours:number;hints:number;answered:number;tries:number[];complete:boolean;moveHint:MagicMove|null;feedback:string;lastCorrect:boolean|null;canUndo:boolean;config:ReturnType<typeof magicLevel>;question:ReturnType<typeof publicMagicQuestion>;learning:{focus:string;track:MagicTrack;fallback:boolean};expiresAt:string;serverNow:string;ended:boolean;score:number};

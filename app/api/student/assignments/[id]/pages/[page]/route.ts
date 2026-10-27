@@ -1,3 +1,4 @@
+import { refreshWorksheetCompletion } from "@/lib/worksheet-completion";
 import { missingPaperQuestions } from "@/lib/paper-completion";
 import { changeClock,runningClock } from "@/lib/study-clock-store";
 import { z } from "zod";
@@ -24,6 +25,7 @@ function errorResponse(error: unknown) {
   if(error instanceof IncompletePage)return fail("INCOMPLETE_PAGE","Finish every question on this page before submitting.",422,undefined,{missingQuestions:error.missingQuestions});
   const code = error instanceof Error ? error.message : "FAILED";
   if (code === "UNAUTHORIZED" || code === "FORBIDDEN") return fail("FORBIDDEN", "This page is not available to this learner.", 403);
+  if(code==="WORKSHEET_COMPLETED")return fail(code,"This worksheet is completed. Ask your parent to reopen it.",409);
   if(code==="LESSON_PAUSED")return fail(code,"Resume the timer before writing or submitting.",423);
   if (code === "PAGE_NOT_FOUND") return fail("NOT_FOUND", "Page not found.", 404);
   if (code === "REVISION_CONFLICT") return fail(code, "This page changed in another tab. Your work is still here; reopen the assignment before continuing.", 409);
@@ -115,15 +117,13 @@ export async function POST(request: Request, params: Params) {
       const results = mergePaperResults(started.previous, deterministic, c.questions);
       const status = results.some(r => r.status === "needs_review") ? "needs_review" : "graded";
       await sql.begin(async tx => {
+        await tx`SELECT 1 FROM study_clocks WHERE assignment_id=${c.assignmentId} AND student_id=${c.studentId} FOR UPDATE`;
         await tx`SELECT id FROM paper_pages WHERE id=${started.pageId} FOR UPDATE`;
         const changed = await tx`UPDATE paper_runs SET state='succeeded',results=${tx.json(results)},input_tokens=${inputTokens},output_tokens=${outputTokens},completed_at=now() WHERE id=${started.runId} AND state='processing' RETURNING id`;
         if (!changed.length) return;
         await tx`UPDATE paper_pages SET results=${tx.json(results)},status=${status},updated_at=now() WHERE id=${started.pageId}`;
-        const [total] = await tx`SELECT count(*)::int count FROM assignment_questions WHERE assignment_id=${c.assignmentId}`;
-        const pages = await tx`SELECT results,status FROM paper_pages WHERE submission_id=${started.submissionId}`;
-        const allResults = pages.flatMap(p => p.results as PrivatePaperResult[]);
-        const complete = allResults.length === Number(total.count) && allResults.every(r => r.status === "correct");
-        await tx`UPDATE submissions SET status=${complete ? "completed" : pages.some(p=>p.status==="needs_review") ? "needs_review" : "in_progress"},last_saved_at=now(),submitted_at=now(),completed_at=${complete ? new Date() : null} WHERE id=${started.submissionId}`;
+        await refreshWorksheetCompletion(tx,started.submissionId);
+        await tx`UPDATE submissions SET submitted_at=now() WHERE id=${started.submissionId}`;
       });
     } catch (error) {
       const allowedErrors = ["AI_BILLING_LIMIT","AI_KEY_INVALID","AI_RATE_LIMIT","AI_PROVIDER_FAILED","AI_RESPONSE_INCOMPLETE","AI_QUESTION_MISMATCH"];

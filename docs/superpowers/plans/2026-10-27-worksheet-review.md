@@ -1,0 +1,7 @@
+# Worksheet review compact-list update
+Request: make the existing parent Worksheet review compact and usable with filters, matching previously approved compact worksheet/history/library UX.
+Scope: existing list route and detail return link; grading/authentication/student data unchanged.
+Design: fifteen-row compact list, attention-first default with all statuses visible, score/status/learner/grade/update date. Primary title/learner search, learner and status filters; grade, subject, Central-date range and ordering under More filters. GET query preserves sharable/bookmarkable filters and pagination; detail returns to the same filtered list. Invalid filters explain recovery; zero results offers Reset.
+Implementation: pure validated URL filters, parameterised server query/counts, reusable list/controls/pagination, responsive styles, safe local return link. No migrations/dependencies required.
+Verification: unit filter/UI coverage, disposable database integration for real filtering/pagination/score/date/authentication, lint/typecheck/build, browser screenshot, remove fixtures afterward.
+Completed: 203/203 tests; lint/typecheck/build passed; deployed integration and browser checks passed. Final responsive header tightened after visual QA. Screenshot output/ui/worksheet-review-compact.png. Exact QA fixture manifest retained on Mac for cleanup across container recreation; cleanup removes only those fixture IDs. No commit/push.

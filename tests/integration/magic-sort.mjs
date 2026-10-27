@@ -1,0 +1,40 @@
+// Run inside the app container: node --import tsx --input-type=module < tests/integration/magic-sort.mjs
+import postgres from 'postgres';import {hash} from '@node-rs/argon2';import {randomUUID,createHash} from 'node:crypto';import assert from 'node:assert/strict';import {solveMagic} from './lib/magic-sort.ts';
+const db=postgres(process.env.DATABASE_URL,{max:1}),origin='http://127.0.0.1:3000',ids=[],sessions=[];let cp,cs,other,view;
+async function auth(role,id){const token=randomUUID(),digest=createHash('sha256').update(token).digest('hex');sessions.push(digest);await db`INSERT INTO sessions(role,parent_id,student_id,token_hash,expires_at) VALUES(${role},${role==='parent'?id:null},${role==='student'?id:null},${digest},now()+interval '30 minutes')`;return `lumi_session=${token}`;}
+async function api(path,cookie,body,method=body?'POST':'GET',source=origin){const r=await fetch(origin+path,{method,headers:{cookie,origin:source,'content-type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});return {status:r.status,...await r.json()};}
+async function action(a,expected=200){const result=await api('/api/student/games/magic',cs,{runId:view.runId,key:randomUUID(),version:view.version,action:a});assert.equal(result.status,expected,JSON.stringify(result));if(expected===200)view=result.data;return result;}
+async function finish(){const body={runId:view.runId,ticks:0,flaps:[]};const r=await api('/api/student/games/finish',cs,body);assert.equal(r.status,200,JSON.stringify(r));const [before]=await db`SELECT seconds FROM game_wallets WHERE student_id=${ids[0]}`;assert.equal((await api('/api/student/games/finish',cs,body)).status,200);const [after]=await db`SELECT seconds FROM game_wallets WHERE student_id=${ids[0]}`;assert.equal(after.seconds,before.seconds,'No duplicate refunds');}
+async function complete(wrong=false){let guard=0;while(!view.complete){assert.ok(++guard<100);if(view.question){const [row]=await db`SELECT private_context FROM magic_sort_levels WHERE student_id=${ids[0]} AND level=${view.level}`;const q=row.private_context.questions[view.answered];assert.ok(!('answer' in view.question));if(wrong){await action({type:'answer',response:'definitely-wrong'});assert.equal(view.lastCorrect,false);await action({type:'hint'});assert.ok(view.question.explanation);wrong=false;}await action({type:'answer',response:q.answer});assert.equal(view.lastCorrect,true);}else{const path=solveMagic(view.board,view.config.capacity);assert.ok(path?.length);await action({type:'pour',...path[0]});}}}
+try{
+ const [p]=await db`SELECT id FROM parents LIMIT 1`;cp=await auth('parent',p.id);
+ for(let i=0;i<2;i++){const [s]=await db`INSERT INTO students(nickname,grade,login_name,pin_hash) VALUES(${i?'Magic isolation QA':'Magic garden QA'},'1',${'magic-qa-'+randomUUID()},${await hash('654321')}) RETURNING id`;ids.push(s.id);}cs=await auth('student',ids[0]);other=await auth('student',ids[1]);
+ assert.equal((await api('/api/student/games/magic',cp)).status,403);
+ assert.equal((await api('/api/parent/games/magic/'+ids[0],cs)).status,403);
+ const config={focus:'math',mathTrack:'add5',lessonId:null};assert.equal((await api('/api/parent/games/magic/'+ids[0],cp,config,'PATCH','https://invalid.example')).status,403);
+ assert.equal((await api('/api/parent/games/magic/'+ids[0],cp,config,'PATCH')).status,200);
+ assert.equal((await api('/api/student/games/start',cs,{key:randomUUID(),game:'magic',level:1})).status,409);
+ await db`INSERT INTO game_wallets(student_id,seconds) VALUES(${ids[0]},900) ON CONFLICT(student_id) DO UPDATE SET seconds=900`;
+ const locked=await api('/api/student/games/start',cs,{key:randomUUID(),game:'magic',level:20});assert.equal(locked.status,409);const [wallet]=await db`SELECT seconds FROM game_wallets WHERE student_id=${ids[0]}`;assert.equal(wallet.seconds,900,'Locked-level start must roll back wallet reservation');
+ const start={key:randomUUID(),game:'magic',level:1,companion:'bunny'};let r=await api('/api/student/games/start',cs,start);assert.equal(r.status,200,JSON.stringify(r));view=r.data;assert.deepEqual((await api('/api/student/games/start',cs,start)).data.board,view.board);
+ assert.equal((await api('/api/student/games/magic?runId='+view.runId,other)).status,404);
+ const path=solveMagic(view.board,view.config.capacity);const move={runId:view.runId,key:randomUUID(),version:view.version,action:{type:'pour',...path[0]}};
+ r=await api('/api/student/games/magic',cs,move);assert.equal(r.status,200,JSON.stringify(r));view=r.data;
+ assert.deepEqual((await api('/api/student/games/magic',cs,move)).data.board,view.board);assert.equal((await api('/api/student/games/magic',cs,{...move,action:{type:'hint'}})).status,409);
+ assert.equal((await api('/api/student/games/magic',cs,{...move,key:randomUUID()})).status,409,'Reject stale versions');
+ await complete(true);assert.equal(view.level,1);let summary=(await api('/api/student/games/magic',cs)).data;assert.equal(summary.unlocked,2);assert.equal(summary.flowers,1);
+ const [review]=await db`SELECT review_item FROM magic_sort_progress WHERE student_id=${ids[0]}`;assert.ok(review.review_item,'Missed content must survive the immediate correct retry for later spaced practice');
+ await action({type:'next'});const [nextContext]=await db`SELECT private_context FROM magic_sort_levels WHERE student_id=${ids[0]} AND level=2`;assert.equal(nextContext.private_context.questions[1].id,review.review_item.id);assert.equal(view.level,2);await action({type:'hint'});const saved=JSON.stringify(view.board);await finish();
+ r=await api('/api/student/games/start',cs,{key:randomUUID(),game:'magic',level:2});assert.equal(r.status,200,JSON.stringify(r));view=r.data;assert.equal(JSON.stringify(view.board),saved,'Resume exactly the saved puzzle');
+ await db`UPDATE game_runs SET expires_at=now()-interval '1 second' WHERE id=${view.runId}`;await action({type:'hint'},409);await finish();
+ // Exercise the final chapter using only this disposable learner's unlock record.
+ await db`UPDATE magic_sort_progress SET unlocked=20 WHERE student_id=${ids[0]}`;
+ r=await api('/api/student/games/start',cs,{key:randomUUID(),game:'magic',level:20});assert.equal(r.status,200,JSON.stringify(r));view=r.data;await complete();await action({type:'next'},409);await finish();
+ summary=(await api('/api/student/games/magic',cs)).data;assert.equal(summary.flowers,2);assert.equal(summary.unlocked,20);
+ const report=await api('/api/parent/games/magic/'+ids[0],cp);assert.equal(report.status,200);assert.ok(report.data.practice.some(p=>!p.correct));assert.ok(report.data.practice.some(p=>p.assisted));
+ assert.equal((await api('/api/parent/games/magic/'+ids[0],cp,{...config,focus:'words'},'PATCH')).status,200);
+ r=await api('/api/student/games/start',cs,{key:randomUUID(),game:'magic',level:3});assert.equal(r.status,200,JSON.stringify(r));view=r.data;const [wordContext]=await db`SELECT private_context FROM magic_sort_levels WHERE student_id=${ids[0]} AND level=3`;assert.equal(wordContext.private_context.questions[0].kind,'word');assert.equal(view.learning.fallback,true);await complete();await finish();
+ const [ledger]=await db`SELECT count(*)::int n FROM game_ledger WHERE student_id=${ids[0]}`;assert.equal(ledger.n,0,'Playing never mints learning points');
+ r=await api('/api/student/games/start',cs,{key:randomUUID(),game:'magic',level:2});assert.equal(r.status,200);view=r.data;await db`UPDATE game_wallets SET enabled=false WHERE student_id=${ids[0]}`;await action({type:'hint'},409);await finish();
+ console.log('PASS: Magic Sort authentication/origin/isolation, no-time and locked-level reservation rollback, authoritative pours, retry/version protection, wrong-answer help, level completion/unlocks, level 20, durable resume, expiry, parent pause, exactly-once refunds, parent practice report, no points minted.');
+}finally{for(const id of ids)await db`DELETE FROM students WHERE id=${id}`;for(const digest of sessions)await db`DELETE FROM sessions WHERE token_hash=${digest}`;await db.end();}

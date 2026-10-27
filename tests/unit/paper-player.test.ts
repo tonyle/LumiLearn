@@ -12,6 +12,17 @@ vi.mock("@/components/paper-ink",()=>({PaperInk:({questions,onChange,onWritingCh
 afterEach(()=>{cleanup();vi.useRealTimers();vi.unstubAllGlobals();});
 const questions=Array.from({length:12},(_,index)=>({id:`00000000-0000-4000-8000-${String(index+1).padStart(12,"0")}`,type:"number",prompt:{text:`Question ${index+1}`},options:[]}));
 describe("paper player",()=>{
+ it("locks a completed worksheet after two gradings even when all answers are wrong",async()=>{
+  const results=questions.slice(0,10).map(q=>({questionId:q.id,status:"incorrect",points:0}));
+  vi.stubGlobal("fetch",vi.fn().mockResolvedValue({ok:true,json:async()=>({data:{revision:2,draft:{},completed:true,gradingAttempts:2,feedback:{status:"graded",results,earned:0,maximum:100,pending:0}}})}));
+  render(createElement(PaperPlayer,{assignmentId:"assignment",studentId:"learner",title:"Completed paper",questions:questions.slice(0,10),aiReady:true}));
+  expect(await screen.findByText(/Completed · 2 grading attempts/)).toBeTruthy();
+  expect(screen.queryByRole("button",{name:/Redo 10 wrong/})).toBeNull();
+  expect(screen.queryByRole("button",{name:/Submit/})).toBeNull();
+  expect((screen.getByRole("textbox",{name:"Answer 1"}) as HTMLTextAreaElement).disabled).toBe(true);
+  expect(screen.getByRole("button",{name:"Exit"})).toBeTruthy();
+ });
+
  it("keeps drawing while saving and sends new ink with the next revision",async()=>{
   let finishFirst:(value:unknown)=>void=()=>{};
   const firstSave=new Promise(resolve=>{finishFirst=resolve;});
