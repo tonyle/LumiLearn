@@ -53,5 +53,18 @@ try{
  const firstPerfect=await request(base+'/pages/0',auth,{baseRevision:third.revision,draft:perfect},'POST',randomUUID());assert.equal(firstPerfect.data.gradingAttempts,1);assert.equal(firstPerfect.data.completed,true);
  assert.equal((await request(reopen,parentAuth,{studentId})).status,200);
  const [reward]=await db`SELECT sum(points)::int points FROM game_ledger WHERE student_id=${studentId} AND assignment_id=${a.id}`;assert.equal(reward.points,3);
- console.log('PASS: two gradings complete at 0/100; validation/failed/idempotent requests do not consume extra attempts; completed writing/timer/submit/exit blocked; parent role/origin and grade override protected; reopening resets two attempts and preserves immutable snapshots; perfect answers still complete.');
+ // Review can also reopen a low-scoring first submission, before automatic completion.
+ const ready=(await request(base+'/pages/0',auth)).data;await request(base+'/timer',auth,{action:'resume'});
+ const low=await request(base+'/pages/0',auth,{baseRevision:ready.revision,draft:wrong},'POST',randomUUID());assert.equal(low.data.completed,false);assert.equal(low.data.gradingAttempts,1);
+ const listHtml=await(await fetch('http://127.0.0.1:3000/parent/paper?q=Two+grading+completion+QA',{headers:{cookie:parentAuth}})).text();assert.ok(listHtml.includes('Reopen for Two grading QA'));
+ const detailHtml=await(await fetch('http://127.0.0.1:3000/parent/paper/'+p.id,{headers:{cookie:parentAuth}})).text();assert.ok(detailHtml.includes('Reopen for student'));
+ await request(base+'/timer',auth,{action:'resume'});await db`UPDATE study_clocks SET elapsed_ms=12345,running_since=now()-interval '2 seconds',lease_until=now()+interval '40 seconds' WHERE assignment_id=${a.id} AND student_id=${studentId}`;
+ const [beforeRuns]=await db`SELECT count(*)::int n FROM paper_runs WHERE page_id=${p.id} AND snapshot_png IS NOT NULL`;
+ await db`UPDATE paper_pages SET status='processing' WHERE id=${p.id}`;assert.equal((await request(reopen,parentAuth,{studentId})).status,409);await db`UPDATE paper_pages SET status='graded' WHERE id=${p.id}`;
+ assert.equal((await request(reopen,parentAuth,{studentId})).status,200);assert.equal((await request(reopen,parentAuth,{studentId})).status,409);
+ const freshLow=(await request(base+'/pages/0',auth)).data;assert.equal(freshLow.gradingAttempts,0);assert.equal(freshLow.completed,false);assert.deepEqual(freshLow.draft,{});
+ const [clock]=await db`SELECT state,elapsed_ms FROM study_clocks WHERE assignment_id=${a.id} AND student_id=${studentId}`;assert.equal(clock.state,'paused');assert.ok(Number(clock.elapsed_ms)>=12345);
+ const [afterRuns]=await db`SELECT count(*)::int n FROM paper_runs WHERE page_id=${p.id} AND snapshot_png IS NOT NULL`;assert.equal(afterRuns.n,beforeRuns.n);
+ const reopenedHtml=await(await fetch('http://127.0.0.1:3000/parent/paper/'+p.id,{headers:{cookie:parentAuth}})).text();assert.ok(reopenedHtml.includes('wait for a new submission before grading again'));
+ console.log('PASS: two gradings complete at 0/100; validation/failed/idempotent requests do not consume extra attempts; completed writing/timer/submit/exit blocked; parent role/origin and grade override protected; reopening resets two attempts and preserves immutable snapshots; perfect answers still complete; review list/detail reopen first low-score submission, processing protection, paused active time and prior snapshot preservation.');
 }finally{if(studentId)await db`DELETE FROM game_ledger WHERE student_id=${studentId}`;if(assignmentId)await db`DELETE FROM assignments WHERE id=${assignmentId}`;if(studentId)await db`DELETE FROM students WHERE id=${studentId}`;for(const digest of sessions)await db`DELETE FROM sessions WHERE token_hash=${digest}`;await db.end();}

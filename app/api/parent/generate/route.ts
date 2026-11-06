@@ -3,9 +3,11 @@ import {sql} from '@/lib/db';
 import {bodyJson,ok} from '@/lib/http';
 import {parentMutation,worksheetError,WorksheetError} from '@/lib/worksheet-store';
 import {generationParametersSchema} from '@/lib/worksheet-generation';
+import {loadGenerationReference} from '@/lib/generation-reference';
 export async function POST(request:Request){try{
  const parentId=await parentMutation(request);
  const body=z.object({creationKey:z.string().regex(/^[a-f0-9]{32}$/),parameters:generationParametersSchema}).strict().parse(await bodyJson(request,10000));
+ if(body.parameters.referenceUploadId)await loadGenerationReference(body.parameters.referenceUploadId);
  const id=await sql.begin(async tx=>{
   await tx`SELECT pg_advisory_xact_lock(hashtext(${body.creationKey}))`;
   const [prior]=await tx`SELECT id,created_by,parameters FROM worksheet_generation_batches WHERE creation_key=${body.creationKey}`;

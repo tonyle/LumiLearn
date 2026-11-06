@@ -1,0 +1,13 @@
+import {describe,expect,it} from 'vitest';
+import {TTT_SIZE,TTT_CELLS,TTT_LEVELS,tttBotMove,tttMove,tttNextBoard,tttOutcome,type TttBoard} from '../../lib/tic-tac-toe';
+const empty=():TttBoard=>Array(81).fill(null);
+const boardWith=(cells:number[],mark:'X'|'O'='X')=>{const b=empty();cells.forEach(i=>b[i]=mark);return b;};
+describe('9 by 9 five-in-a-row',()=>{
+ it('uses 81 squares and five progressive levels',()=>{expect(TTT_SIZE).toBe(9);expect(TTT_CELLS).toBe(81);expect(TTT_LEVELS.map(l=>l.level)).toEqual([1,2,3,4,5]);expect(tttNextBoard(0,5,1)).toEqual(empty());expect(tttNextBoard(1,5,1).filter(Boolean)).toEqual(['O']);});
+ it('recognizes five or more horizontally, vertically and both diagonals including edges',()=>{for(const line of [[76,77,78,79,80],[8,17,26,35,44],[0,10,20,30,40],[8,16,24,32,40],[74,75,76,77,78,79]]){const outcome=tttOutcome(boardWith(line));expect(outcome.winner).toBe('X');expect(outcome.line).toHaveLength(5);}});
+ it('does not win with three/four, gaps or wrapped rows',()=>{for(const cells of [[0,1,2],[18,19,20,21],[6,7,8,9,10],[0,10,20,30,50]])expect(tttOutcome(boardWith(cells)).winner).toBeNull();});
+ it('rejects invalid, occupied and terminal moves without mutating input',()=>{const b=empty();expect(tttMove(b,80,'X')?.[80]).toBe('X');expect(b[80]).toBeNull();for(const c of [-1,81,1.5,NaN])expect(tttMove(b,c,'X')).toBeNull();expect(tttMove(boardWith([80]),80,'O')).toBeNull();expect(tttMove(boardWith([0,1,2,3,4]),50,'O')).toBeNull();expect(tttBotMove(boardWith([0,1,2,3,4]),5,1)).toBeNull();expect(tttMove(Array(9).fill(null),0,'X')).toBeNull();});
+ it('recognizes a full draw without five',()=>{const b=Array.from({length:81},(_,i)=>((Math.floor(i/9)*2+i%9)%4<2?'X':'O')) as TttBoard;expect(tttOutcome(b)).toEqual({winner:null,draw:true,line:[]});expect(tttBotMove(b,5,0)).toBeNull();});
+ it('prioritizes winning then blocking a four from Thinker upward',()=>{for(const level of [3,4,5])for(const cells of [[36,37,38,39],[8,17,26,35],[0,10,20,30],[8,16,24,32]]){for(const mark of ['X','O'] as const){const b=boardWith(cells,mark);const c=tttBotMove(b,level,42)!;expect(tttOutcome(tttMove(b,c,mark)!).winner).toBe(mark);}}});
+ it('returns reproducible legal moves and bounded searches across all levels',()=>{const b=boardWith([40,41,51]);b[30]='O';b[50]='O';const started=performance.now();for(let l=1;l<=5;l++){const c=tttBotMove(b,l,7)!;expect(b[c]).toBeNull();expect(tttBotMove(b,l,7)).toBe(c);}expect(performance.now()-started).toBeLessThan(3000);expect(new Set(Array.from({length:20},(_,s)=>tttBotMove(empty(),1,s))).size).toBeGreaterThan(3);});
+});

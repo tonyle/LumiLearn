@@ -1,0 +1,2 @@
+import {resourceSession,resourceError} from '@/lib/resource-store';import {getBookPage} from '@/lib/books';import {readBookImage} from '@/lib/book-files';
+export async function GET(r:Request,{params}:{params:Promise<{id:string;pageId:string}>}){try{const s=await resourceSession(),{id,pageId}=await params,p=await getBookPage(id,pageId,s);return new Response(new Uint8Array(await readBookImage(p.image_key)),{headers:{'Content-Type':'image/jpeg','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});}catch(e){return resourceError(e);}}

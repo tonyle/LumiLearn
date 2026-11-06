@@ -1,3 +1,4 @@
+import {assertGameDay} from './games';
 import {createHash} from 'node:crypto';import {z} from 'zod';import type {TransactionSql} from 'postgres';
 import {sql} from './db';import {reserveFlight,walletLock} from './games';import {ResourceError} from './resource-store';
 import {magicLevel,newMagicBoard,pourMagic,magicSolved,solveMagic,type MagicBoard,type MagicMove} from './magic-sort';
@@ -35,7 +36,7 @@ export async function readMagic(id:string,runId:string){return sql.begin(tx=>run
 export async function actMagic(id:string,b:z.infer<typeof magicActionSchema>){return sql.begin(async tx=>{
  const wallet=await walletLock(tx,id);const [run]=await tx`SELECT *,expires_at>clock_timestamp() available FROM game_runs WHERE id=${b.runId} AND student_id=${id} AND game_code='magic' FOR UPDATE`;if(!run)throw new ResourceError('NOT_FOUND','Magic session not found.',404);
  const hash=createHash('sha256').update(JSON.stringify({version:b.version,action:b.action})).digest('hex');const [prior]=await tx`SELECT payload_hash FROM magic_sort_actions WHERE run_id=${b.runId} AND request_key=${b.key}`;if(prior){if(prior.payload_hash!==hash)throw new ResourceError('CONFLICT','This move changed. Refresh your saved board.',409);return runView(tx,id,b.runId);}
- if(!wallet.enabled||run.ended_at||!run.available)throw new ResourceError('TIME_UP','Play time has ended. Your board is saved.',409);
+ assertGameDay(wallet);if(!wallet.enabled||run.ended_at||!run.available)throw new ResourceError('TIME_UP','Play time has ended. Your board is saved.',409);
  await tx`SELECT student_id FROM magic_sort_progress WHERE student_id=${id} FOR UPDATE`;const [link]=await tx`SELECT level FROM game_magic_runs WHERE run_id=${run.id}`;const [row]=await tx`SELECT * FROM magic_sort_levels WHERE student_id=${id} AND level=${link.level} FOR UPDATE`;let state=row.state as MagicState,context=row.private_context as Context;const action=b.action;
  if(state.version!==b.version)throw new ResourceError('STALE','This board changed in another tab. Resume your saved board.',409);
  if(action.type==='next'){if(!state.complete||state.level>=20)throw new ResourceError('LEVEL_LOCKED','Finish this puzzle before the next one.',409);const next=await loadLevel(tx,id,state.level+1,Number(run.seed)+state.level*1237);state=next.state as MagicState;context=next.private_context as Context;await tx`UPDATE game_magic_runs SET level=${state.level} WHERE run_id=${run.id}`;}

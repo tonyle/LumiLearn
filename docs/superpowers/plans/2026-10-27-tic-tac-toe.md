@@ -1,0 +1,9 @@
+# Tic-Tac-Toe: five growing challenges
+User authorizes new human-vs-computer game, progressive difficulty, polished production visuals. Build on existing student Games/shared wallet. Five levels Beginner through Master; win or draw unlocks next (perfect final bot must allow draw progression). Server grades legal moves and computes bot replies using local minimax/tactical/random engine; no paid AI or spendable rewards. Preserve unfinished board, level and win/draw/loss stats; timed sessions/parent pause, save exit/refunds use existing infrastructure.
+Files: pure engine/tests; progress/action migration0021, authoritative store/API; responsive SVG/CSS originalboard/robot dialog, local sounds, map; GameHub card. Idempotent request hashes/version locks, wallet-first transactions, role/origin and ownership checks. Verify exhaustive perfect-bot outcomes, lifecycle tests, full regression/build, disposable HTTP integration, browser screenshot and cleanup.
+
+Completed: five-level engine, persisted authoritative game API, shared wallet integration, responsive original game UI, full regression/build and disposable integration/browser verification. See TEST_REPORT.md for evidence.
+
+9×9 revision: expand in place to 81 squares with five connected horizontally, vertically or diagonally. Use fixed-depth/beam tactical search instead of exhaustive 3×3 minimax; no perfect-bot claim. Preserve wallet, levels and totals; migrate incompatible small boards to empty large boards. Enlarge responsive dialog, show explicit rules and correct row/column labels. Verify edge lines, draw/invalid moves, tactical responses, performance, full suite/build and disposable HTTP/browser play.
+
+2026-10-31 revision complete: free selection of all difficulties, including a new round during active play. Difficulty switching resets only the board, preserving statistics and the current time reservation. Verified unit/UI, disposable HTTP, browser and deployed build.

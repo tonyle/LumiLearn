@@ -51,7 +51,7 @@ export async function PUT(request: Request, params: Params) {
       if (page.status === "processing") throw new Error("PAGE_BUSY");
       if (page.revision !== body.baseRevision) throw new Error("REVISION_CONFLICT");
       const draft = cleanDraft(body.draft, page.draft as PaperDraft, page.results as PrivatePaperResult[], c.questions);
-      await tx`UPDATE paper_pages SET draft=${tx.json(draft)},revision=revision+1,updated_at=now() WHERE id=${page.id}`;
+      await tx`UPDATE paper_pages SET draft=${tx.json(draft)},revision=revision+1,student_worked_at=now(),updated_at=now() WHERE id=${page.id}`;
       await tx`UPDATE submissions SET last_saved_at=now() WHERE id=${submission.id}`;
       return Number(page.revision) + 1;
     });
@@ -89,12 +89,12 @@ export async function POST(request: Request, params: Params) {
         await tx`SELECT pg_advisory_xact_lock(163021, 2)`;
         await tx`SELECT pg_advisory_xact_lock(hashtext('shared-ai-budget'))`;
         const budget = Number(process.env.AI_MONTHLY_BUDGET_USD || "10");
-        const [usage] = await tx`SELECT ((SELECT coalesce(sum(reserved_cost_usd),0) FROM paper_runs WHERE created_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM upload_extractions WHERE updated_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM worksheet_generation_items WHERE updated_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM vocab_images WHERE updated_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM vocab_photo_imports WHERE updated_at>=date_trunc('month',now())))::float8 amount`;
+        const [usage] = await tx`SELECT ((SELECT coalesce(sum(reserved_cost_usd),0) FROM paper_runs WHERE created_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM upload_extractions WHERE updated_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM worksheet_generation_items WHERE updated_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM vocab_images WHERE updated_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM vocab_photo_imports WHERE updated_at>=date_trunc('month',now()))+(SELECT coalesce(sum(reserved_cost_usd),0) FROM reading_book_ocr_jobs WHERE created_at>=date_trunc('month',now())))::float8 amount`;
         if (!Number.isFinite(budget) || Number(usage.amount) + reserve > budget) throw new Error("BUDGET_LIMIT");
       }
       const clock=await changeClock(tx,c.studentId,c.assignmentId,"finish");
       const [run] = await tx`INSERT INTO paper_runs(page_id,idempotency_key,revision,reserved_cost_usd,model,duration_ms) VALUES(${page.id},${key},${Number(page.revision)+1},${reserve},${reserve ? process.env.OPENAI_MODEL || "gpt-6-luna" : null},${clock.elapsedMs}) RETURNING id`;
-      await tx`UPDATE paper_pages SET draft=${tx.json(draft)},revision=revision+1,status='processing',updated_at=now() WHERE id=${page.id}`;
+      await tx`UPDATE paper_pages SET draft=${tx.json(draft)},revision=revision+1,status='processing',student_worked_at=now(),updated_at=now() WHERE id=${page.id}`;
       await tx`UPDATE submissions SET last_saved_at=now() WHERE id=${submission.id}`;
       return { duplicate: false as const, pageId: page.id as string, runId: run.id as string, submissionId: submission.id as string, previous, targets, draft };
     });

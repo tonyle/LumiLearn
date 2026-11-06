@@ -14,7 +14,7 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
   if(!unchanged&&submission.status==='completed')throw Error('WORKSHEET_COMPLETED');
   if(!unchanged&&page.status==='processing')throw Error('PAGE_BUSY');
   if(!unchanged&&page.revision!==body.baseRevision)throw Error('REVISION_CONFLICT');
-  if(!unchanged)await tx`UPDATE paper_pages SET draft=${tx.json(draft)},revision=revision+1,updated_at=now() WHERE id=${page.id}`;
+  if(!unchanged)await tx`UPDATE paper_pages SET draft=${tx.json(draft)},revision=revision+1,student_worked_at=now(),updated_at=now() WHERE id=${page.id}`;
   await tx`UPDATE submissions SET last_saved_at=now() WHERE id=${submission.id}`;
   const clock=current.state==='submitted'?current:await changeClock(tx,studentId,assignmentId,'pause');
   return {revision:Number(page.revision)+(unchanged?0:1),clock};

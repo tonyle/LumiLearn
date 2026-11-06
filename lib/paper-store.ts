@@ -3,7 +3,7 @@ import { sql } from "./db";
 import type { GradingQuestion } from "./paper-grading";
 import { QUESTIONS_PER_PAGE, safePaperFeedback, type PaperDraft, type PrivatePaperResult } from "./paper";
 export async function paperContext(studentId: string, assignmentId: string, pageIndex: number,readOnly=false) {
-  const [assignment] = await sql`SELECT a.id,a.title FROM assignments a JOIN assignment_students ast ON ast.assignment_id=a.id WHERE a.id=${assignmentId} AND ast.student_id=${studentId} AND (a.state='assigned' OR ${readOnly} AND a.state='closed')`;
+  const [assignment] = await sql`SELECT a.id,a.title FROM assignments a JOIN assignment_students ast ON ast.assignment_id=a.id WHERE a.id=${assignmentId} AND ast.unassigned_at IS NULL AND ast.student_id=${studentId} AND (a.state='assigned' OR ${readOnly} AND a.state='closed')`;
   if (!assignment) throw new Error("FORBIDDEN");
   const rows = await sql`SELECT qv.id,q.type,qv.prompt,qv.options,qv.answer_key,qv.grading_policy,aq.sort_order FROM assignment_questions aq JOIN question_versions qv ON qv.id=aq.question_version_id JOIN questions q ON q.id=qv.question_id WHERE aq.assignment_id=${assignmentId} ORDER BY aq.sort_order LIMIT ${QUESTIONS_PER_PAGE} OFFSET ${pageIndex * QUESTIONS_PER_PAGE}`;
   if (!rows.length) throw new Error("PAGE_NOT_FOUND");
@@ -17,8 +17,9 @@ export function cleanDraft(draft: PaperDraft, previous: PaperDraft, results: Pri
   return merged;
 }
 export async function readPaper(studentId: string, assignmentId: string, pageIndex: number, count: number) {
-  const [progress] = await sql`SELECT s.status,greatest(0,(SELECT count(*) FROM paper_runs r JOIN paper_pages p ON p.id=r.page_id WHERE p.submission_id=s.id AND r.state='succeeded')-s.grading_attempt_offset)::int attempts FROM submissions s WHERE s.student_id=${studentId} AND s.assignment_id=${assignmentId}`;
-  const completion = {completed:progress?.status==='completed',gradingAttempts:Number(progress?.attempts??0)};
+  const [progress] = await sql`SELECT s.id,s.status,s.grading_attempt_offset FROM submissions s WHERE s.student_id=${studentId} AND s.assignment_id=${assignmentId}`;
+  const runs=progress?await sql`SELECT p.page_index FROM paper_runs r JOIN paper_pages p ON p.id=r.page_id WHERE p.submission_id=${progress.id} AND r.state='succeeded' ORDER BY r.completed_at,r.id`:[];
+  const completion = {completed:progress?.status==='completed',gradingAttempts:runs.slice(Number(progress?.grading_attempt_offset??0)).filter(r=>Number(r.page_index)===pageIndex).length};
   const [page] = await sql`SELECT p.* FROM paper_pages p JOIN submissions s ON s.id=p.submission_id WHERE s.assignment_id=${assignmentId} AND s.student_id=${studentId} AND p.page_index=${pageIndex}`;
   if (!page) return { ...completion, revision: 0, draft: {}, feedback: null };
   if (page.status === "processing") {

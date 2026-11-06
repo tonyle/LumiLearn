@@ -1,5 +1,6 @@
 import {z} from 'zod';
 import {questionSetSchema,type QuestionSet} from './question-contract';
+export const MAX_WORKSHEET_QUESTIONS=200;
 export const QUESTION_TYPES=['number','single_choice','multiple_choice','short_text','true_false','ordering','long_text','handwriting'] as const;
 export const TYPE_LABELS:Record<typeof QUESTION_TYPES[number],string>={number:'Number',single_choice:'Choose one',multiple_choice:'Choose all that apply',short_text:'Short answer',true_false:'True or false',ordering:'Put in order',long_text:'Written explanation',handwriting:'Drawing / handwriting'};
 export const SUBJECTS={math:'Mathematics',reading:'Words & reading',writing:'Writing',science:'Science',social_studies:'Social studies'};
@@ -13,10 +14,15 @@ export const authorQuestionSchema=z.object({
  criteria:z.array(z.object({label:z.string().max(200),description:z.string().max(4000),weight:z.string().max(30)}).strict()).min(1).max(10),sampleAnswer:z.string().max(12000),
  reasoning:z.string().max(12000),steps:z.string().max(12000),translationVi:z.string().max(12000),
 }).strict();
-export const authorDraftSchema=z.object({title:z.string().max(200),description:z.string().max(2000),grade:z.enum(GRADES),subject:z.enum(['math','reading','writing','science','social_studies']),difficulty:z.enum(['review','grade_level','advanced']),questions:z.array(authorQuestionSchema).length(10)}).strict();
+export const authorDraftSchema=z.object({title:z.string().max(200),description:z.string().max(2000),grade:z.enum(GRADES),subject:z.enum(['math','reading','writing','science','social_studies']),difficulty:z.enum(['review','grade_level','advanced']),questions:z.array(authorQuestionSchema).min(1).max(MAX_WORKSHEET_QUESTIONS)}).strict();
 export type AuthorQuestion=z.infer<typeof authorQuestionSchema>;export type AuthorDraft=z.infer<typeof authorDraftSchema>;
 export type LearnerChoice={id:string;nickname:string;grade:string};
 export function emptyAuthorQuestion(index:number):AuthorQuestion{return {id:`q${String(index+1).padStart(2,'0')}`,type:'number',text:'',options:[{id:'a',text:''},{id:'b',text:''}],answerKind:'number',numberValue:'',tolerance:'0',unit:'',accepted:'',selectedOptions:[],order:'',booleanValue:'',criteria:[{label:'Correct response',description:'',weight:'1'}],sampleAnswer:'',reasoning:'',steps:'',translationVi:''};}
+/** Pick a free ID so removing or reordering questions cannot create duplicates. */
+export function nextAuthorQuestion(questions:AuthorQuestion[]):AuthorQuestion{
+ let index=0;while(questions.some(q=>q.id===`q${String(index+1).padStart(2,'0')}`))index++;
+ return emptyAuthorQuestion(index);
+}
 export function emptyAuthorDraft():AuthorDraft{return {title:'',description:'',grade:'3',subject:'math',difficulty:'grade_level',questions:Array.from({length:10},(_,i)=>emptyAuthorQuestion(i))};}
 export function defaultAnswerKind(type:AuthorQuestion['type']):AuthorQuestion['answerKind']{return ({number:'number',single_choice:'option_id',multiple_choice:'option_ids',short_text:'text',true_false:'boolean',ordering:'ordered_ids',long_text:'rubric',handwriting:'rubric'} as const)[type];}
 function number(value:string){return value.trim()?Number(value):NaN;}

@@ -1,0 +1,2 @@
+import {sql} from '@/lib/db';import {parentResourceMutation,resourceError} from '@/lib/resource-store';import {bookMetadataSchema} from '@/lib/books';import {ok,bodyJson} from '@/lib/http';
+export async function POST(r:Request){try{const s=await parentResourceMutation(r),b=bookMetadataSchema.parse(await bodyJson(r,10000));const[book]=await sql`INSERT INTO reading_books(title,description,grade,created_by) VALUES(${b.title},${b.description},${b.grade},${s.parentId}) RETURNING *`;return ok({book},201);}catch(e){return resourceError(e);}}

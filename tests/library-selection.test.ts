@@ -13,12 +13,12 @@ describe('library selections across paginated filters',()=>{
   selected=toggleLibraryQuestion(selected,nextPage,true);
   expect(selected.map(q=>q.versionId)).toEqual(['first','other','next']);
  });
- it('enforces ten unique selections even across different pages',()=>{
+ it('enforces 200 unique selections even across different pages',()=>{
   let selected:LibraryQuestion[]=[];
-  for(let index=0;index<12;index++)selected=toggleLibraryQuestion(selected,question(String(index)),true);
-  expect(selected).toHaveLength(10);
+  for(let index=0;index<202;index++)selected=toggleLibraryQuestion(selected,question(String(index)),true);
+  expect(selected).toHaveLength(200);
   expect(toggleLibraryQuestion(selected,question('0'),true)).toEqual(selected);
   selected=toggleLibraryQuestion(selected,question('3'),false);
-  expect(toggleLibraryQuestion(selected,question('11'),true).map(q=>q.versionId)).toEqual(['0','1','2','4','5','6','7','8','9','11']);
+  const replacement=toggleLibraryQuestion(selected,question('201'),true);expect(replacement).toHaveLength(200);expect(replacement.at(-1)?.versionId).toBe('201');expect(replacement.some(q=>q.versionId==='3')).toBe(false);
  });
 });

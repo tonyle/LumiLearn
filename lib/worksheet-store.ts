@@ -1,3 +1,4 @@
+import {MAX_WORKSHEET_QUESTIONS} from './worksheet-authoring';
 import type {TransactionSql} from 'postgres';import {z} from 'zod';
 import {requireRole} from './auth';import {hasSameOrigin} from './request-origin';import {fail} from './http';import {zodIssues,contentHash,type QuestionSet} from './question-schema';
 export class WorksheetError extends Error{constructor(public code:string,message:string,public status=422){super(message);}}
@@ -9,13 +10,13 @@ export async function createAssignment(tx:TransactionSql,parentId:string,title:s
  await tx`SELECT pg_advisory_xact_lock(hashtext(${key}))`;
  const [prior]=await tx`SELECT id,creation_hash FROM assignments WHERE creation_key=${key}`;
  if(prior){if(prior.creation_hash!==hash)throw new WorksheetError('REQUEST_CONFLICT','This request was already used for different content. Reload before trying again.',409);return String(prior.id);}
- if(versions.length!==10||new Set(versions).size!==10)throw new WorksheetError('TEN_QUESTIONS_REQUIRED','Choose exactly 10 different questions.');
+ if(!versions.length||versions.length>MAX_WORKSHEET_QUESTIONS||new Set(versions).size!==versions.length)throw new WorksheetError('QUESTIONS_REQUIRED',`Choose 1–${MAX_WORKSHEET_QUESTIONS} different questions.`);
  await validateLearners(tx,students);
  const [assignment]=await tx`INSERT INTO assignments(title,state,max_attempts,created_by,creation_key,creation_hash) VALUES(${title},'draft',3,${parentId},${key},${hash}) RETURNING id`;
- for(let i=0;i<10;i++)await tx`INSERT INTO assignment_questions(assignment_id,question_version_id,sort_order) VALUES(${assignment.id},${versions[i]},${i})`;
+ for(let i=0;i<versions.length;i++)await tx`INSERT INTO assignment_questions(assignment_id,question_version_id,sort_order) VALUES(${assignment.id},${versions[i]},${i})`;
  for(const studentId of students)await tx`INSERT INTO assignment_students(assignment_id,student_id) VALUES(${assignment.id},${studentId})`;
  await tx`UPDATE assignments SET state='assigned' WHERE id=${assignment.id}`;
- await tx`INSERT INTO audit_events(actor_role,actor_parent_id,action,entity_type,entity_id,metadata) VALUES('parent',${parentId},'worksheet_assigned','assignment',${assignment.id},${tx.json({questions:10,students:students.length})})`;
+ await tx`INSERT INTO audit_events(actor_role,actor_parent_id,action,entity_type,entity_id,metadata) VALUES('parent',${parentId},'worksheet_assigned','assignment',${assignment.id},${tx.json({questions:versions.length,students:students.length})})`;
  return String(assignment.id);
 }
 export async function saveManualQuestions(tx:TransactionSql,parentId:string,set:QuestionSet){

@@ -10,3 +10,20 @@ it('accepts exactly ten complete questions with canonical keys and stable questi
 it('rejects incomplete or invalid answers and duplicate questions within or across a batch',()=>{expect(()=>parseGeneratedWorksheet({...output,questions:questions.slice(1)},parameters,0)).toThrow();expect(()=>parseGeneratedWorksheet({...output,questions:questions.map((q,i)=>i===0?{...q,numberValue:''}:q)},parameters,0)).toThrow('AI_INVALID_QUESTIONS');expect(()=>parseGeneratedWorksheet({...output,questions:questions.map((q,i)=>i===1?questions[0]:q)},parameters,0)).toThrow('AI_DUPLICATE_QUESTIONS');expect(()=>parseGeneratedWorksheet(output,parameters,0,['  CALCULATE 1 × 0.2. '])).toThrow('AI_DUPLICATE_QUESTIONS');});
 it('uses structured Responses output without storage and rejects incomplete provider responses',async()=>{const fetcher=vi.fn().mockResolvedValue({ok:true,json:async()=>({status:'completed',output:[{content:[{type:'output_text',text:JSON.stringify(output)}]}],usage:{input_tokens:100,output_tokens:200}})});const result=await generateWorksheet(parameters,0,[],fetcher);expect(result.inputTokens).toBe(100);const sent=JSON.parse(fetcher.mock.calls[0][1].body);expect(sent.store).toBe(false);expect(sent.text.format.strict).toBe(true);expect(sent.input[0].content[0].text).toContain('Multiplying decimals');fetcher.mockResolvedValueOnce({ok:true,json:async()=>({status:'incomplete'})});await expect(generateWorksheet(parameters,0,[],fetcher)).rejects.toThrow('AI_RESPONSE_INCOMPLETE');});
 it('returns a safe provider billing error without exposing its raw message',async()=>{const fetcher=vi.fn().mockResolvedValue({ok:false,status:429,json:async()=>({error:{code:'insufficient_quota',message:'raw secret provider details'}})});await expect(generateWorksheet(parameters,0,[],fetcher)).rejects.toThrow('AI_BILLING_LIMIT');});
+it('defaults old batches to ten and bounds per-worksheet questions and references',()=>{
+ expect(generationParametersSchema.parse(parameters).questionCount).toBe(10);
+ for(const questionCount of [0,51,1.5])expect(generationParametersSchema.safeParse({...parameters,questionCount}).success).toBe(false);
+ expect(generationParametersSchema.safeParse({...parameters,referenceUploadId:'not-an-id'}).success).toBe(false);
+ const small={...parameters,questionCount:2};expect(parseGeneratedWorksheet({...output,questions:questions.slice(0,2)},small,0).draft.questions).toHaveLength(2);
+ expect(()=>parseGeneratedWorksheet(output,small,0)).toThrow('AI_INVALID_QUESTIONS');
+});
+it('sends a private PDF reference as vision input with exact schema bounds and scaled tokens',async()=>{
+ const {PDFDocument}=await import('pdf-lib');const pdf=await PDFDocument.create();pdf.addPage();
+ const fetcher=vi.fn().mockResolvedValue({ok:true,json:async()=>({status:'completed',output:[{content:[{type:'output_text',text:JSON.stringify({...output,questions:questions.slice(0,2)})}]}]})});
+ const result=await generateWorksheet({...parameters,questionCount:2},0,[],fetcher,{data:Buffer.from(await pdf.save()),mime:'application/pdf'});
+ const sent=JSON.parse(fetcher.mock.calls[0][1].body);
+ expect(sent.input[0].content[1].type).toBe('input_file');expect(sent.input[0].content[1].file_data).toMatch(/^data:application\/pdf;base64,/);
+ expect(sent.instructions).toContain('exactly 2 original');expect(sent.instructions).toContain('untrusted');
+ expect(sent.max_output_tokens).toBe(4000);expect(sent.text.format.schema.properties.questions.minItems).toBe(2);
+ expect(result.warnings.join(' ')).toContain('page layout');
+});

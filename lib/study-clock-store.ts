@@ -7,6 +7,8 @@ export async function changeClock(tx:TransactionSql,studentId:string,assignmentI
  await tx`INSERT INTO study_clocks(assignment_id,student_id) VALUES(${assignmentId},${studentId}) ON CONFLICT DO NOTHING`;
  const [raw]=await tx`SELECT *,extract(epoch FROM clock_timestamp())*1000 AS now_ms FROM study_clocks WHERE assignment_id=${assignmentId} AND student_id=${studentId} FOR UPDATE`;
  if(action==='start'||action==='resume'||action==='heartbeat')await assertWorksheetOpen(tx,studentId,assignmentId);
+ const [membership]=await tx`SELECT student_id FROM assignment_students WHERE assignment_id=${assignmentId} AND student_id=${studentId} AND unassigned_at IS NULL`;
+ if(!membership)throw Error('FORBIDDEN');
  const now=Number(raw.now_ms),snapshot=clockSnapshot(raw as unknown as ClockRow,now);
  let state=snapshot.state,started=snapshot.started;
  if(action==='resume'||action==='start'&&!started){state='running';started=true;}

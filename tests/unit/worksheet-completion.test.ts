@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {worksheetCompleted} from '@/lib/worksheet-completion';
+import {worksheetCompleted,worksheetPagesCompleted} from '@/lib/worksheet-completion';
 describe('two-grading worksheet completion',()=>{
  const wrong=Array.from({length:10},()=>({status:'incorrect' as const}));
  it('keeps a worksheet open after its first non-perfect grading',()=>expect(worksheetCompleted(10,wrong,1)).toBe(false));
@@ -7,3 +7,5 @@ describe('two-grading worksheet completion',()=>{
  it('completes a perfect worksheet on its first grading',()=>expect(worksheetCompleted(10,wrong.map(()=>({status:'correct'})),1)).toBe(true));
  it('never completes a partially answered worksheet or an empty one',()=>{expect(worksheetCompleted(10,wrong.slice(1),2)).toBe(false);expect(worksheetCompleted(0,[],2)).toBe(false);});
 });
+
+it('does not treat grading two different pages once as a second attempt',()=>{const results=Array.from({length:10},()=>({status:'incorrect' as const}));expect(worksheetPagesCompleted(20,[{results,attempts:1},{results,attempts:1}])).toBe(false);expect(worksheetPagesCompleted(20,[{results,attempts:2},{results,attempts:2}])).toBe(true);expect(worksheetPagesCompleted(13,[{results:results.map(()=>({status:'correct'})),attempts:1},{results:results.slice(0,3),attempts:2}])).toBe(true);});

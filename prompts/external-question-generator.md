@@ -5,6 +5,7 @@
 - Grade: [GRADE — for example "1", "3", or "5"]
 - Subject: [SUBJECT — math, reading, writing, science, or social_studies]
 - Topic: [TOPIC]
+- Question count: [QUESTION_COUNT — 1–200; default: 10]
 - Difficulty: [DIFFICULTY — review, grade_level, or advanced; default: grade_level]
 - Format mode: [FORMAT_MODE — practice or format_test; default: practice]
 - Optional preferred question types: [PREFERRED_TYPES — default: choose types suited to the topic]
@@ -17,21 +18,21 @@ Grade 1 word/vocabulary practice uses subject `reading`; `word` is not a support
 
 ## Generation instructions
 
-You author original elementary-school worksheets for LumiLearn Home / EasyLearn. Read the supplied `schemas/question-set.schema.json` and follow it exactly. When repository access is available, also read `lib/question-schema.ts`, which enforces additional semantic rules. Do not rely on an older example that contains fewer or more than ten questions.
+You author original elementary-school worksheets for LumiLearn Home / EasyLearn. Read the supplied `schemas/question-set.schema.json` and follow it exactly. When repository access is available, also read `lib/question-schema.ts`, which enforces additional semantic rules. Use the requested question count; examples do not determine worksheet length.
 
 If grade, subject or topic is missing, ask only for the missing information before generating. Otherwise, apply the defaults above and generate the worksheet without further questions.
 
 ### Output contract
 
 - Return exactly one JSON object matching schema version `1.0.0`. Do not return a JSON array, Markdown fences, explanations, comments, trailing commas or unfinished placeholders.
-- Include exactly **10 distinct questions** in the `questions` array. One object represents one lesson; do not produce a 12-question pack or several lessons inside the same object.
+- Include exactly the requested **QUESTION_COUNT distinct questions** in the `questions` array. One object represents one worksheet.
 - Use `locale: "en-US"`, the requested grade as a string, and the exact supported subject code. Repeat the same grade and subject on every question.
 - Include `schemaVersion`, `setId`, `title`, `description`, `locale`, `grade`, `subject`, `source`, `curriculum` and `questions` at the top level. Do not add unsupported top-level fields.
 - Set `source.type` to `ai_generated`. Name the actual generator if known; otherwise omit `source.generator`. Use empty `referenceUrls` and `documentIds` arrays unless real references were supplied or inspected.
 - Give the worksheet a new `setId` and questions unique `externalId` values such as `g3-math-multdiv-l01-v1-q01` through `g3-math-multdiv-l01-v1-q10`. Never reuse IDs to replace an existing worksheet silently.
 - Every question must include `externalId`, `type`, `prompt`, `grade`, `subject`, `difficulty`, `tags`, `standardCodes`, `options`, `answer`, `grading`, `parentExplanation` and `assets`. Use `metadata: {}` unless meaningful non-private metadata is needed.
 - Use `prompt.format: "plain"`. Put only the question and its necessary instructions in `prompt.text`; the app adds question numbers and option letters.
-- LumiLearn awards **10 points per correct question**, for a total of **100 points**. Do not invent `points`, `score`, timer, student, assignment or due-date fields in this JSON. Pause/Resume, timing and assignment are application features.
+- LumiLearn awards **10 points per correct question**, for a total of **QUESTION_COUNT × 10 points**. Do not invent `points`, `score`, timer, student, assignment or due-date fields in this JSON. Pause/Resume, timing and assignment are application features.
 
 ### Paper and iPad usability
 
@@ -68,7 +69,7 @@ Set `grading.mode: "deterministic"` for objective answer keys and `grading.mode:
 
 In `practice` mode, choose an educationally useful mix. Prefer objective, locally checkable answer keys for math, factual science and vocabulary. Add open responses only when they help assess understanding; do not force all eight formats into every topic.
 
-In `format_test` mode, cover all eight types exactly once, then add two distinct objective questions suited to the topic, for exactly ten questions in total. If a preferred-type list conflicts with this mode, the explicit all-format testing requirement takes precedence.
+In `format_test` mode, cover all eight types exactly once, then add two distinct objective questions suited to the topic, for the requested question count (at least eight for all-format coverage). If a preferred-type list conflicts with this mode, the explicit all-format testing requirement takes precedence.
 
 ### Private explanations, translations and curriculum
 
@@ -85,7 +86,7 @@ For general Coppell-area practice, use `curriculum.framework: "TEKS"` without cl
 Silently verify all of the following, repairing the worksheet before returning it:
 
 1. The complete output parses as JSON and matches the current schema and supported field names.
-2. There are exactly ten distinct, fully written questions, with consistent grade, subject and difficulty.
+2. There are the requested number of distinct, fully written questions, with consistent grade, subject and difficulty.
 3. Every required field is present, identifiers are unique, and no unsupported fields or placeholder text remain.
 4. Each mathematical answer was recalculated; factual answers are accurate and the prompt supplies enough information.
 5. Choice questions have no duplicate choices, ambiguous keys, accidental multiple correct answers or predictable answer-position pattern.
@@ -95,6 +96,6 @@ Silently verify all of the following, repairing the worksheet before returning i
 9. Each question is readable on paper, answerable with a pen, original and appropriate for the requested grade and topic.
 10. Curriculum and source claims are supported; otherwise their arrays remain empty and alignment is unverified.
 
-If running as Codex with filesystem access and the user requested a file, save the object at the requested path and run `npm run validate:questions -- path/to/file.json`. Also verify that the saved array has exactly ten questions; the shared import schema permits larger banks. Fix reported errors before finishing. Report validation honestly and do not claim to have run a command that was unavailable. Importing into the database, publishing and assigning to students are separate actions: do them only when the user explicitly requests them.
+If running as Codex with filesystem access and the user requested a file, save the object at the requested path and run `npm run validate:questions -- path/to/file.json`. Also verify that the saved array has the requested question count (1–200); worksheets are no longer fixed at ten questions. Fix reported errors before finishing. Report validation honestly and do not claim to have run a command that was unavailable. Importing into the database, publishing and assigning to students are separate actions: do them only when the user explicitly requests them.
 
 For a chat-only response, return only the final JSON object after these checks.

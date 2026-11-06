@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import QRCode from "qrcode";
 
 export default async function Settings() {
@@ -26,7 +27,7 @@ export default async function Settings() {
           <Image src={qrCode} alt={`Scan to open LumiLearn on your iPad: ${ipadUrl}`} width={256} height={256} unoptimized style={{ maxWidth: "100%", height: "auto" }} />
           <p className="muted">If the host’s Wi-Fi IP changes, restart with npm run docker:start to refresh this address and QR code.</p>
         </> : <p className="muted">Start the server with npm run docker:start to detect the host’s Wi-Fi address and generate the iPad QR code automatically.</p>}
-        <p className="notice">Keep public router port forwarding off. Plain HTTP is for a trusted home LAN only.</p>
+        <section aria-label="iPad microphone setup"><h3>Enable reading aloud on iPad</h3><p>Install this home server’s public certificate once, then enable full trust for it in iPad Settings → General → About → Certificate Trust Settings. Open the HTTPS address above to use the microphone.</p><Link prefetch={false} download className="button secondary" href="/api/parent/books/certificate">Download home HTTPS certificate</Link><p className="muted">The certificate is for this home server only. Install it yourself on the iPad; no public router forwarding is needed.</p></section><p className="notice">Keep public router port forwarding off. Use this server only on your trusted home Wi-Fi.</p>
       </section>
     </div>
   </div>;
