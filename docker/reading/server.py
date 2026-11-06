@@ -3,12 +3,27 @@ import io
 import threading
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request
 import models
 
 MAX_BYTES = 6 * 1024 * 1024
 MAX_SECONDS = 30
-app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+_ready = False
+
+
+@asynccontextmanager
+async def lifespan(_app):
+    global _ready
+    await asyncio.to_thread(models.load_cached_models)
+    _ready = True
+    try:
+        yield
+    finally:
+        _ready = False
+
+
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
 _gate = threading.Lock()
 _executor = ThreadPoolExecutor(max_workers=1)
 
@@ -64,7 +79,7 @@ async def run_exclusive(work):
         except HTTPException:
             raise
         except Exception:
-            raise HTTPException(503, 'Local models unavailable. Run bash scripts/warmup-reading.sh on the Mac; check available memory and model cache, then retry.') from None
+            raise HTTPException(503, 'Local models unavailable. Restart with npm run docker:start on the Mac to prepare them automatically.') from None
         finally:
             _gate.release()
     # Worker owns the gate until actual completion, even if the client disconnects.
@@ -73,7 +88,9 @@ async def run_exclusive(work):
 
 @app.get('/health')
 def health():
-    return {'status': 'ok', 'busy': _gate.locked()}
+    if not _ready:
+        raise HTTPException(503, 'Reading models are still starting.')
+    return {'status': 'ready', 'busy': _gate.locked()}
 
 
 @app.post('/translate')

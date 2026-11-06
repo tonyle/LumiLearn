@@ -6,7 +6,7 @@ import sys
 import threading
 import types
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 class HTTPException(Exception):
     def __init__(self, status_code, detail, headers=None):
@@ -34,6 +34,25 @@ class Request:
             yield chunk
 
 class Guards(unittest.IsolatedAsyncioTestCase):
+    async def test_models_load_before_health_is_ready(self):
+        with self.assertRaises(HTTPException):
+            server.health()
+        load = Mock()
+        with patch.object(server, 'models', types.SimpleNamespace(load_cached_models=load)):
+            async with server.lifespan(None):
+                load.assert_called_once()
+                self.assertEqual(server.health()['status'], 'ready')
+        with self.assertRaises(HTTPException):
+            server.health()
+
+    async def test_model_load_failure_never_reports_ready(self):
+        with patch.object(server, 'models', types.SimpleNamespace(load_cached_models=Mock(side_effect=RuntimeError('not ready')))):
+            with self.assertRaises(RuntimeError):
+                async with server.lifespan(None):
+                    self.fail('Startup must not finish before models load')
+        with self.assertRaises(HTTPException):
+            server.health()
+
     async def test_stream_size_rejected_without_content_length(self):
         with self.assertRaises(HTTPException) as raised:
             await server.body(Request(b'ab', b'cd'), 3)

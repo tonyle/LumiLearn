@@ -14,8 +14,10 @@ export LUMI_LAN_HOST IPAD_APP_URL
 LUMI_LAN_HOST="$(node -e 'process.stdout.write(new URL(process.argv[1]).hostname)' "$lan_url")"
 IPAD_APP_URL="https://${LUMI_LAN_HOST}:3443"
 node scripts/save-lan-url.mjs
+echo "Preparing LumiLearn: HTTPS, database and local reading models (first start may download free models)."
 echo "iPad address: $IPAD_APP_URL"
 # Export host address: a Docker container sees its own network, not host Wi-Fi.
 docker compose up -d --wait "$@"
 bash scripts/export-local-ca.sh
+echo "LumiLearn is ready. Local reading models and HTTPS are running."
 echo "Open Parent → Settings to scan the iPad QR code. See docs/ipad-https.md to trust the local certificate."

@@ -40,7 +40,7 @@ services:
     depends_on:
       db: { condition: service_healthy }
       documents: { condition: service_started }
-      reading: { condition: service_started }
+      reading: { condition: service_healthy }
     restart: unless-stopped
   documents:
     build: ./docker/documents
@@ -55,6 +55,14 @@ services:
     restart: unless-stopped
   reading:
     build: ./docker/reading
+    depends_on:
+      reading-model-setup: { condition: service_completed_successfully }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json,urllib.request; assert json.load(urllib.request.urlopen('http://127.0.0.1:8080/health',timeout=3))['status']=='ready'"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 30s
     networks: [reading]
     read_only: true
     tmpfs: ["/tmp:rw,nosuid,noexec,size=64m,mode=1777"]
@@ -67,7 +75,6 @@ services:
     restart: unless-stopped
   reading-model-setup:
     build: ./docker/reading
-    profiles: [model-setup]
     command: ["python", "models.py"]
     volumes: ["./data/reading-models:/models"]
     mem_limit: 2g
