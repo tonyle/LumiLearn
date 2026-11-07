@@ -1,0 +1,15 @@
+import {z} from 'zod';
+export const activityPointSchema=z.object({x:z.number().min(0).max(1),y:z.number().min(0).max(1),p:z.number().min(0).max(1).optional()}).strict();
+export const activityStrokeSchema=z.object({tool:z.enum(['pen','brush','highlighter','eraser','line','rectangle','ellipse','fill']),color:z.string().regex(/^#[0-9a-fA-F]{6}$/),width:z.number().min(1).max(80),points:z.array(activityPointSchema).min(1).max(1500)}).strict();
+export type ActivityStroke=z.infer<typeof activityStrokeSchema>;
+export const activityAnswerSchema=z.object({strokes:z.array(activityStrokeSchema).max(400),text:z.string().max(4000)}).strict();
+export type ActivityAnswer=z.infer<typeof activityAnswerSchema>;
+export const activityPartSchema=z.object({id:z.string().uuid(),pageId:z.string().uuid(),kind:z.enum(['draw','write']),label:z.string().trim().min(1).max(120),x:z.number().min(0).max(1),y:z.number().min(0).max(1),width:z.number().min(.05).max(1),height:z.number().min(.05).max(1),lines:z.number().int().min(2).max(20).default(6),rubric:z.string().trim().min(1).max(2000)}).strict().refine(p=>p.x+p.width<=1.001&&p.y+p.height<=1.001,'Keep answer areas inside the page.');
+export type ActivityPart=z.infer<typeof activityPartSchema>;
+export const bookActivitySchema=z.object({title:z.string().trim().min(1).max(160),instructions:z.string().trim().min(1).max(3000),contextPageIds:z.array(z.string().uuid()).min(1).max(20),parts:z.array(activityPartSchema).min(1).max(10),published:z.boolean().default(false)}).strict().refine(v=>new Set(v.parts.map(p=>p.id)).size===v.parts.length,'Answer areas need unique IDs.');
+export type BookActivity=z.infer<typeof bookActivitySchema>&{id:string;book_id:string;revision:number};
+export type ActivityDraft=Record<string,ActivityAnswer>;
+export const activityDraftSchema=z.record(z.string().uuid(),activityAnswerSchema).superRefine((v,ctx)=>{if(Object.keys(v).length>10||Object.values(v).reduce((n,a)=>n+a.strokes.reduce((m,s)=>m+s.points.length,0),0)>40000)ctx.addIssue({code:'custom',message:'This activity has too many drawing points.'});});
+export type ActivityFeedback={partId:string;points:number|null;maximum:number;feedback:string;transcription:string;needsReview:boolean};
+export type ActivityAttempt={id:string;created_at:string;state:string;draft:ActivityDraft;results:ActivityFeedback[];earned:number;maximum:number;pageSnapshot?:{id:string;width:number;height:number}[];originalResults?:ActivityFeedback[];activitySnapshot?:Omit<BookActivity,'parts'>&{parts:Omit<ActivityPart,'rubric'>[]}};
+export type ActivityState={revision:number;activityRevision:number;draftActivityRevision?:number;draft:ActivityDraft;attempts:ActivityAttempt[]};

@@ -225,3 +225,32 @@ Parent → **Books** creates a book or imports PDF/photo pages, including direct
 Student → **My reading** lists assigned published books. Opening a book hides the student navigation/footer and fills the reading viewport. Swipe left/right on the page to turn it, or use the always-visible top arrows. Vertical gestures and two-finger zoom do not turn pages. Speed and English voice are in the small Settings dialog. The compact passage dock expands for meanings/reading feedback, sits beside the page in landscape or below it in portrait, and resets when turning pages. Original page images have sentence speaker buttons; the reading panel supports local English device voices/speed, word or sentence Vietnamese meanings, and up to30seconds of **Read aloud** practice. Passage translation uses OpenAI (default `gpt-6-luna`) with persistent shared caching, no reasoning tokens and a bounded response. Only the selected reviewed text is sent, with no student data or images. New translations use the shared monthly AI budget; cached results cost no additional API calls. Individual word meanings still use free local Argos, and recognition uses free local faster-whisper tiny.en on the Mac. Recognition compares transcript words and can mishear; it is not a pronunciation assessment. Audio, transcripts and feedback are never saved in the database, learning history, logs or browser storage; only the current UI response remains until cleared/navigation.
 
 Run `npm run docker:start` to start everything automatically: HTTPS, database, app, and reading models. On first start, missing free models download into `data/reading-models`; later cached starts work offline. The app waits for the models to load before reporting ready. No separate warmup command is needed. Runtime inference is internal-only; it does not upload recordings or text to outside services. Uploaded book page images remain in `data/uploads/books`, included in the existing upload storage. Models and HTTPS CA live in their own persistent Mac directories. See [iPad HTTPS setup](docs/ipad-https.md) for installing the public CA and enabling the microphone. Parent → Settings offers a public-certificate download; private CA keys/proxy secret are never served.
+
+Book studio supports selecting multiple PDFs and photos together, including at
+creation (20 files, 20 MB per file, 50 MB total, up to 50 pages per PDF and 200
+pages per book). Imported pages follow file selection order; thumbnail controls
+and each page's order field let parents rearrange them. **Extract pages & mark
+reviewed** runs the existing OpenAI OCR sequentially, saves every successful page
+immediately and marks nonempty results reviewed. It skips reviewed pages by
+default; replacing them is an explicit option. Progress, stop-after-current and
+per-page failures are shown. Keep the tab open; restart later to process remaining
+unreviewed pages. Empty/failed OCR keeps existing text. Publishing and assignment
+remain separate parent actions, and manual text/box editing remains available.
+
+**Book activities:** In Book studio, add Drawing & writing activities, select
+reviewed reading pages as evidence, and define answer rectangles directly over
+book page images. Each area has private parent-editable grading criteria and can
+default to Draw or lined Write. Publish the activity for students assigned the
+published book. Students open **Activities** in the focused reader. Draw tools
+include pen, brush, highlighter, eraser, line, rectangle, ellipse, fill, colors,
+width, undo/redo and confirmed clear. Write supports pen, eraser and keyboard;
+ink and typed text are retained across mode changes. Touch is ignored in answer
+areas; use Move & zoom or scroll outside the area. Saves are debounced and
+serialized without disabling input. Committed ink and live strokes use separate layers; ordinary pen contacts never read back canvas pixels or replay old fills. After one second of idle, a Worker saves the snapshot and receives only revision metadata. Save & back flushes live ink before leaving. Submit checks every area, then sends bounded
+answer crops and selected reading text to OpenAI under the existing AI consent
+and shared monthly allowance (conservative $0.10 reserved per attempt).
+Submissions retain original drafts/definitions and source-page snapshots;
+uncertain grades need parent review. Parent corrections are separate review
+records and private notes are excluded from student responses. Existing game
+reward rules are unchanged. Physical stylus/iPad testing remains necessary for
+hardware-specific input behavior.

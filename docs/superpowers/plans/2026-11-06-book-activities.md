@@ -1,0 +1,9 @@
+# Book activities with drawing and writing
+
+Implement book-linked activities in place. Parent defines answer regions over original page images, instructions, related reviewed reading pages, private grading criteria and publication. Multiple answer regions/pages form one activity. Book assignment controls access; publication is separate. Student opens an activity from book reader, uses draw or lined write mode (pen/keyboard), autosaves nonblocking, submits once and sees immutable attempt history. Original book pages remain unchanged.
+
+Shared contract: lib/book-activity-contract.ts. New /api/parent/books/[id]/activities GET/POST and /[activityId] PATCH/DELETE; /api/books/[id]/activities GET, /[activityId] GET state, PUT {baseRevision,activityRevision,draft}, POST {key,baseRevision,activityRevision,images:[{partId,png}]} grading. Student GET list strips rubric; grading reconstructs actual original page crop with bounded transparent ink supplied by client and selected reviewed reading text, validates authorized activity revision, reserves shared budget and stores immutable attempt snapshot/results. No reward changes without user request. Uncertain AI judgments need parent review.
+
+Canvas tools: pen, brush, highlighter, eraser, line/rectangle/ellipse, fill bucket, colors/custom color, width, undo/redo, clear confirmation, pen vs keyboard write mode, ruled writing guides, image underneath, fixed accessible toolbar, palm rejection and explicit zoom/fit. Keep input work outside React and saving. Reuse underlying conventions; separate rich drawing commands from old worksheet strokes to avoid regressions.
+
+Tests for geometry/input limits, tool replay/fill, publication/auth, stale saves/submissions, budget, immutable history and UI. No paid AI QA or real student changes. Build, migrate, deploy and verify HTTPS.

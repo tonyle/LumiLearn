@@ -285,3 +285,36 @@ Worksheet completion / parent reopening:
 - Mocked-provider tests cover bounded payloads, no stored conversations, truncated/empty/error responses; route tests cover authorization before cache and local word routing; cache tests cover reuse and duplicate-call prevention. No paid API request was used for validation.
 - Lint and TypeScript checks passed. Full Docker Vitest run: 70 files, 289 tests passed (one worker). An earlier two-worker run hit an unrelated tic-tac-toe UI timeout; sequential rerun passed.
 - Production Docker build passed; migration `0028_reading_translations.sql` applied and confirmed in PostgreSQL.
+
+### Book batch authoring — 2026-11-06
+- New multi-file PDF/photo regression reproduced the previous PDF-only restriction before implementation.
+- Full Docker suite passed: 74 files / 300 tests. A preceding run hit the known intermittent Tic-tac-toe timing failure; isolated rerun and final full suite passed.
+- Final empty-OCR preservation change: 7 extraction/batch UI tests passed. Lint, TypeScript and production Docker build passed.
+- Tests cover multiple PDFs mixed with images, file limits, bulk progress/errors, explicit overwrite choice, per-page ordering, opt-in/budget enforcement, automatic review, individual extraction compatibility and preserving text on empty OCR. Provider calls are mocked; no paid OpenAI QA calls.
+- Deployed integration checks passed with disposable records: mixed PDFs/photos rendered by the local service, page swaps persisted with both revisions incremented, authorization/publishing/assignment checks retained; fixtures were automatically cleaned.
+- Added and passed a navigation cleanup regression: leaving Book studio stops new paid OCR requests after the current page. Final batch UI suite: 4 tests passed.
+- Final production build/deploy and visual browser check passed; corrected the bulk overwrite checkbox alignment for touch use. Preview screenshot: output/ui/book-bulk-studio.png. Disposable preview book/account/learner and image files removed after verification.
+
+### Book activities — 2026-11-06
+- Added image-overlay answer regions, rich drawing/coloring, lined pen/keyboard writing, nonblocking serialized autosave, activity submission and parent review.
+- New unit regressions cover geometry/command limits and flood fill, blank/eraser-only validation, private rubric/note stripping, bounded source-image compositing, low-confidence grading, exact committed autosave revision, historical source access, activity-revision changes and edits made during saving.
+- Final full Docker run: 77 files / 323 tests passed. Lint and TypeScript passed. Earlier test-only transaction mocks were corrected to reset pending mock responses and provide tx.json.
+- Review findings addressed: committed autosave revision/draft pairing, refreshing both activity geometry and state together, compatible drafts after activity revision changes, and retained source images for submitted activities.
+- OpenAI calls were mocked for QA; no paid AI calls or real learner work changes.
+- Production build and deployment passed. Deployed disposable API integration passed publication/auth/origin, private rubrics/notes, stale drafts, blank-before-AI validation, parent correction, immutable snapshots and original-page deletion with retained authorized snapshot access.
+- Browser verification: drew an ellipse, flood-filled its interior, switched to the writing area, typed a lined caption, and verified PostgreSQL persisted both answer areas, two drawing commands and the typed text (revision 3). No submit-to-OpenAI action performed.
+- UI artifacts: output/ui/book-activity-drawing.png and output/ui/book-activity-writing.png. Disposable preview account, learner, book, activity, drafts and images removed after verification. Physical iPad stylus behavior remains a hardware QA step.
+
+### Activity area drag/resize — 2026-11-06
+- Added direct area movement, eight edge/corner resize handles with 44px hit targets, minimum-size/page bounds, pointer capture/cancellation, live create-area preview, selected area highlighting and optional precise coordinates.
+- Keyboard arrows adjust positions/edges; Shift increases the step. Existing text, criteria and student drawing tools are unchanged.
+- Eight targeted geometry/UI/book-authoring tests passed; lint and TypeScript passed. Minimum dimensions are rounded to avoid floating-point validation failures at the 5% limit.
+- Production build/deploy passed. Browser drag of bottom-right corner and body move persisted successfully (activity revision incremented; dimensions changed from .8×.35 to .721053×.310526). Saved preview output/ui/book-activity-resize.png; exact disposable fixture records/images removed. HTTPS login returned 200.
+
+### Continuous book-activity ink — 2026-11-06
+- Removed per-contact full-canvas readback and per-stroke replay. Committed ink, live preview and typed text now have separate layers; only the active stroke is drawn during movement. Flood fills run only when requested.
+- Debounced saves wait for pen lift/idle and run serialization/network/response parsing in a Worker. PUT returns revision metadata instead of reloading complete attempt history and draft data. New strokes remain authoritative while acknowledgements arrive.
+- Save & back freezes input, flushes live ink and waits for persistence. Lost acknowledgements recover only when the stored draft exactly matches the sent snapshot; different-tab work never replaces local ink. Late grading polls are ignored after their effect ends.
+- Regression coverage includes 100 consecutive pen contacts without pixel readback/replay, stale echoes, missed up/palm events, cached fills, worker validation/lifecycle, editing during save, acknowledgement recovery and cross-tab conflicts.
+- Verification: lint, TypeScript, diff whitespace check, production build/deployment and deployed book-activities integration passed. Full suite: 349/350 passed; remaining failure is `tests/unit/tic-tac-game.test.ts:18` (9×9 board test clicks Play before its loading state enables it). No Tic-Tac-Toe code changed for this task. Final focused ink/player suite: 11/11 passed.
+- Browser: drew 12 consecutive contacts, autosave reached “All changes saved”; PostgreSQL confirmed exactly 12 commands at revision 1. Save/back/reopen retained all 12. HTTPS login returned 200. Preview screenshot: output/ui/book-activity-smooth-ink.png. Disposable account, learner, book, activity, drafts and images cleaned. No paid AI calls; physical iPad stylus performance remains to be checked on-device.

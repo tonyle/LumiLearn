@@ -1,0 +1,2 @@
+import {activityAttemptPage,activityError} from '@/lib/book-activities';import {resourceSession} from '@/lib/resource-store';
+export async function GET(_r:Request,{params}:{params:Promise<{id:string;activityId:string;attemptId:string;pageId:string}>}){try{const s=await resourceSession(),{id,activityId,attemptId,pageId}=await params;return new Response(new Uint8Array(await activityAttemptPage(id,activityId,attemptId,pageId,s)),{headers:{'Content-Type':'image/jpeg','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});}catch(e){return activityError(e);}}

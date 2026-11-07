@@ -1,5 +1,6 @@
 import postgres from 'postgres';
 import sharp from 'sharp';
+import {PDFDocument} from 'pdf-lib';
 import assert from 'node:assert/strict';
 import {randomUUID,createHash} from 'node:crypto';
 import {unlink} from 'node:fs/promises';
@@ -47,9 +48,15 @@ try{
  check(await api(pageBase,{method:'PUT',body:{regions:[{...region,text:'The dog is happy.'}],reviewed:true}}),200,'edit page');
  detail=check(await api(base),200,'edited detail');assert.equal(detail.book.published,false,'page edit unpublishes');forbidden(await api(image,{cookie:ca}));
  check(await api(base,{method:'PATCH',body:settings([students[0]])}),200,'republish');
+ const pdf=await PDFDocument.create();pdf.addPage([160,200]);const pdfBytes=await pdf.save();
+ const mixed=new FormData();mixed.append('files',new Blob([pdfBytes],{type:'application/pdf'}),'first.pdf');mixed.append('files',new Blob([jpeg],{type:'image/jpeg'}),'photo.jpg');mixed.append('files',new Blob([pdfBytes],{type:'application/pdf'}),'second.pdf');
+ detail=check(await api(base+'/pages',{method:'POST',body:mixed}),200,'mixed PDF/photo batch');assert.equal(detail.pages.length,4);assert.equal(detail.book.published,false);
+ const moving=detail.pages[1],swapping=detail.pages[2];
+ check(await api(base+'/pages/'+moving.id,{method:'PUT',body:{regions:moving.regions,reviewed:false,pageNumber:swapping.page_number,baseRevision:moving.revision}}),200,'reorder imported page');
+ const reordered=check(await api(base),200,'reordered pages');assert.equal(reordered.pages[1].id,swapping.id);assert.equal(reordered.pages[2].id,moving.id);assert.equal(reordered.pages[1].revision,swapping.revision+1);
  check(await api(base,{method:'DELETE'}),200,'soft delete');check(await api(base),404,'deleted parent detail');forbidden(await api(image,{cookie:ca}));
  const[row]=await db`SELECT deleted_at FROM reading_books WHERE id=${id}`;assert.ok(row.deleted_at,'soft deletion retains database row');
- console.log('PASS books: disposable create/upload/manual review, validation, publishing, assignment/image isolation, service authorization, revocation, edit unpublishing, soft deletion and origin guards. No AI/service calls.');
+ console.log('PASS books: disposable create/upload/manual review, validation, publishing, assignment/image isolation, service authorization, revocation, edit unpublishing, soft deletion, mixed PDF/photo batches, page reordering and origin guards. Local PDF renderer used; no paid AI calls.');
 }finally{
  for(const id of books){const pages=await db`SELECT image_key FROM reading_book_pages WHERE book_id=${id}`;await db`DELETE FROM reading_books WHERE id=${id}`;for(const page of pages){assert.match(page.image_key,/^[a-f0-9-]+\.jpg$/i);await unlink(resolve('data/uploads/books',page.image_key)).catch(e=>{if(e.code!=='ENOENT')throw e;});}}
  for(const token of tokens)await db`DELETE FROM sessions WHERE token_hash=${token}`;
