@@ -34,7 +34,7 @@ try{
  const duplicate=await request(endpoint,{cookie,method:'POST',body:{baseRevision:saved.data.revision,draft},key:runKey});assert.equal(duplicate.status,200);assert.equal(duplicate.data.revision,graded.data.revision);
  [pageId]=await db`SELECT p.id FROM paper_pages p JOIN submissions s ON s.id=p.submission_id WHERE s.assignment_id=${assignment.id}`;pageId=pageId.id;
  const [count]=await db`SELECT count(*)::int count, min(octet_length(snapshot_png))::int bytes FROM paper_runs WHERE page_id=${pageId}`;assert.equal(count.count,1);assert.ok(count.bytes>1000);
- const journal=await fetch(base+`/s/${student.id}/history`,{headers:{cookie}});assert.equal(journal.status,200);const journalHtml=await journal.text();assert.ok(journalHtml.includes('90 / 100'));assert.ok(journalHtml.includes('Disposable paper QA'));
+ const journal=await fetch(base+`/s/${student.id}/history`,{headers:{cookie}});assert.equal(journal.status,200);const journalHtml=await journal.text();assert.match(journalHtml.replace(/<[^>]+>/g,''),/90\s*\/\s*100/);assert.ok(journalHtml.includes('Disposable paper QA'));
  const correct=graded.data.feedback.results.find(r=>r.status==='correct').questionId;
  await request(`/api/student/assignments/${assignment.id}/timer`,{cookie,method:"POST",body:{action:"resume"}});
  const changed=structuredClone(draft);changed[correct].text='tampered answer';

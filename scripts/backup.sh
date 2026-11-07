@@ -8,6 +8,7 @@ destination="$(cd "$destination" && pwd -P)"
 stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 backup_dir="$destination/$stamp"
 mkdir "$backup_dir"
+# Prepared BookReader WAVs live under uploads/books/audio and are archived below.
 # Use credentials already configured inside the container; never print secrets.
 docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc' > "$backup_dir/database.dump"
 docker compose exec -T db pg_restore --list < "$backup_dir/database.dump" > "$backup_dir/database.contents"

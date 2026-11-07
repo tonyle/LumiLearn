@@ -13,7 +13,7 @@ try{
  assert.equal((await post('/api/auth/student/login',{loginName:name,pin:'000000'})).status,401);
  const login=await post('/api/auth/student/login',{loginName:name,pin:'123456'});assert.equal(login.status,200);const cookie=login.headers.get('set-cookie').split(';')[0];assert.ok(login.headers.get('set-cookie').includes('HttpOnly'));
  const home=await fetch(base+`/s/${id}/home`,{headers:{cookie}});assert.equal(home.status,200);assert.ok((await home.text()).includes('Disposable login QA'));
- const history=await fetch(base+`/s/${id}/history?date=2026-02-30`,{headers:{cookie}});assert.equal(history.status,200);assert.ok((await history.text()).includes('A fresh page.'));
+ const history=await fetch(base+`/s/${id}/history?date=2026-02-30`,{headers:{cookie}});assert.equal(history.status,200);assert.ok((await history.text()).includes('No submissions for this day.'));
  const [other]=await db`SELECT id FROM students WHERE id<>${id} LIMIT 1`;const denied=await fetch(base+`/s/${other.id}/history`,{headers:{cookie},redirect:'manual'});assert.equal(denied.status,307);
  assert.equal((await post(`/api/parent/students/${id}`,{loginName:name,pin:'999999'},cookie,'PATCH')).status,401);
  await post(`/api/parent/students/${id}`,{loginName:name,pin:'829371'},`lumi_session=${token}`,'PATCH');assert.equal((await (await fetch(base+'/api/session',{headers:{cookie}})).json()).data.role,null);

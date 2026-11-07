@@ -19,18 +19,21 @@ services:
       retries: 20
     restart: unless-stopped
   app:
+    image: ${COMPOSE_PROJECT_NAME:-easylearn}-app
     build: .
     env_file: .env
-    environment:
+    environment: &app-environment
       DOCUMENT_CONVERTER_URL: http://documents:8080
       READING_SERVICE_URL: http://reading:8080
+      TTS_SERVICE_URL: http://tts:8080
+      TTS_TIMEOUT_MS: ${TTS_TIMEOUT_MS:-95000}
       INTERNAL_PROXY_SECRET: ${INTERNAL_PROXY_SECRET:-}
       BOOK_CA_PATH: /app/data/certificates/lumilearn-root.crt
       IPAD_APP_URL: ${IPAD_APP_URL:-}
       DATABASE_URL: postgresql://${POSTGRES_USER:-lumilearn}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-lumilearn}
-    networks: [default, documents, reading]
+    networks: [default, documents, reading, tts]
     ports: ["3000:3000"]
-    volumes:
+    volumes: &app-storage
       - type: bind
         source: ./data/uploads
         target: /app/data/uploads
@@ -41,6 +44,28 @@ services:
       db: { condition: service_healthy }
       documents: { condition: service_started }
       reading: { condition: service_healthy }
+      tts: { condition: service_healthy }
+    restart: unless-stopped
+  book-audio:
+    image: ${COMPOSE_PROJECT_NAME:-easylearn}-app
+    env_file: .env
+    environment: *app-environment
+    command: ["node", "--import", "tsx", "scripts/book-audio-worker.ts"]
+    networks: [default, tts]
+    volumes: *app-storage
+    depends_on:
+      db: { condition: service_healthy }
+      tts: { condition: service_healthy }
+    mem_limit: 512m
+    cpus: 0.5
+    pids_limit: 128
+    stop_grace_period: 105s
+    healthcheck:
+      test: ["CMD", "node", "-e", "const s=require('fs').statSync('/app/data/uploads/books/audio/.worker.json');if(Date.now()-s.mtimeMs>180000)process.exit(1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     restart: unless-stopped
   documents:
     build: ./docker/documents
@@ -79,6 +104,29 @@ services:
     volumes: ["./data/reading-models:/models"]
     mem_limit: 2g
     cpus: 2
+  tts:
+    build: ./docker/tts
+    environment:
+      TTS_THREADS: ${TTS_THREADS:-2}
+      TTS_CACHE_MAX_MB: ${TTS_CACHE_MAX_MB:-512}
+      TTS_SYNTHESIS_TIMEOUT_SECONDS: 90
+    networks: [tts]
+    read_only: true
+    # phonemizer loads a temporary copy of its eSpeak shared library.
+    tmpfs: ["/tmp:rw,nosuid,exec,size=128m,mode=1777"]
+    volumes: ["./data/tts-audio:/cache"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 2g
+    cpus: 2
+    pids_limit: 128
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json,urllib.request; h=json.load(urllib.request.urlopen('http://127.0.0.1:8080/health',timeout=3)); assert h['status']=='ready' and h['voice']=='af_heart'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    restart: unless-stopped
   caddy:
     build: ./docker/caddy
     environment:
@@ -105,6 +153,8 @@ services:
     restart: unless-stopped
 
 networks:
+  tts:
+    internal: true
   default:
   documents:
     internal: true

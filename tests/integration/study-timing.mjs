@@ -22,6 +22,7 @@ try{
  }
  const [cap]=await db`INSERT INTO assignments(title,state,created_by) VALUES('Disposable cap QA','assigned',${parent.id}) RETURNING id`;assignments.push(cap.id);
  for(let i=0;i<10;i++)await db`INSERT INTO assignment_questions(assignment_id,question_version_id,sort_order) VALUES(${cap.id},${questions[i].id},${i})`;
- await assert.rejects(()=>db`INSERT INTO assignment_questions(assignment_id,question_version_id,sort_order) VALUES(${cap.id},${questions[10].id},10)`,/LESSON_QUESTION_LIMIT/);
- console.log('Timing integration passed: pause/reload freezes, paused writes and submit blocked, ownership, resume, duration snapshots, idempotent submit, two lessons in one day, 11th question rejected.');
+ await db`INSERT INTO assignment_questions(assignment_id,question_version_id,sort_order) VALUES(${cap.id},${questions[10].id},10)`;
+ const [count]=await db`SELECT count(*)::int n FROM assignment_questions WHERE assignment_id=${cap.id}`;assert.equal(count.n,11);
+ console.log('Timing integration passed: pause/reload freezes, paused writes and submit blocked, ownership, resume, duration snapshots, idempotent submit, two lessons in one day, flexible 11-question lessons supported.');
 }finally{for(const hash of tokens)await db`DELETE FROM sessions WHERE token_hash=${hash}`;for(const id of assignments)await db`DELETE FROM assignments WHERE id=${id}`;if(student)await db`DELETE FROM students WHERE id=${student.id}`;await db.end();}

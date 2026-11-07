@@ -1,0 +1,14 @@
+import {mkdtemp,rm,readFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {audioJobs,bookAudioKey,readBookAudio,writeBookAudio,bookAudioStatus,prepareBookAudio} from '@/lib/book-audio-library';
+let root:string;
+const id='11111111-1111-4111-8111-111111111111';
+const pages=[{id:'page',revision:1,regions:[{id:'r',text:'The cat sleeps.'}]}];
+const wav=Buffer.alloc(48);wav.write('RIFF',0);wav.write('WAVE',8);wav.writeUInt16LE(1,22);wav.writeUInt32LE(24000,24);wav.writeUInt16LE(16,34);
+beforeEach(async()=>{root=await mkdtemp(join(tmpdir(),'book-audio-'));vi.stubEnv('BOOK_AUDIO_DIR',root);});afterEach(async()=>{await rm(root,{recursive:true,force:true});vi.unstubAllEnvs();});
+it('deduplicates text into one master supporting all three playback speeds',()=>{expect(audioJobs([...pages,...pages])).toHaveLength(1);expect(bookAudioKey(' The cat\n sleeps. ')).toBe(bookAudioKey('The cat sleeps.'));expect(bookAudioKey('The dog runs.')).not.toBe(bookAudioKey('The cat sleeps.'));});
+it('writes permanent per-book audio atomically and serves it without a provider',async()=>{await writeBookAudio(id,'The cat sleeps.',wav);expect(await readBookAudio(id,'The cat sleeps.')).toEqual(wav);expect(await readFile(join(root,id,bookAudioKey('The cat sleeps.')+'.wav'))).toEqual(wav);expect((await bookAudioStatus(id,pages)).ready).toBe(1);await expect(writeBookAudio('../bad','Hello',wav)).rejects.toThrow();});
+it('resumes preparation without regenerating ready files and invalidates edited text',async()=>{let calls=0;const generate=async()=>{calls++;return wav;};await prepareBookAudio(id,pages,generate,2);expect(calls).toBe(1);expect((await bookAudioStatus(id,pages)).ready).toBe(1);await prepareBookAudio(id,pages,generate,6);expect(calls).toBe(1);expect((await bookAudioStatus(id,pages)).state).toBe('ready');await prepareBookAudio(id,pages,generate,6);expect(calls).toBe(1);expect((await bookAudioStatus(id,[{...pages[0],regions:[{id:'r',text:'The dog runs.'}]}])).state).toBe('queued');});
+it('preserves ready files on failure and resumes the missing variants on retry',async()=>{const more=[...pages,{id:'next',revision:1,regions:[{id:'r2',text:'The dog runs.'}]}];await writeBookAudio(id,'The cat sleeps.',wav);await prepareBookAudio(id,more,async()=>{throw Error('Unavailable');},6);expect((await bookAudioStatus(id,more)).state).toBe('error');expect(await readBookAudio(id,'The cat sleeps.')).toEqual(wav);await prepareBookAudio(id,more,async()=>wav,6);expect((await bookAudioStatus(id,more)).state).toBe('ready');});
